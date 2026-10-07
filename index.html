@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roboter zur Probe</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#05101f">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Roboter-Probe">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Einen humanoiden Roboter per Handy ins eigene Wohnzimmer stellen und ihm Befehle geben.">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{--bg:#f6f5f1;--paper:#fff;--ink:#1f2326;--ink2:#4a4f53;--mute:#7c8186;--rule:#dcd8cf;--anth:#383e42;--acc:#2f8fd8;--glow:#7cc4ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16191b;--paper:#1f2326;--ink:#eceae5;--ink2:#c3c6c8;--mute:#93989c;--rule:#363b3f}}
+:root[data-theme="dark"]{--bg:#16191b;--paper:#1f2326;--ink:#eceae5;--ink2:#c3c6c8;--mute:#93989c;--rule:#363b3f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',Arial,sans-serif;line-height:1.5}
+header{background:var(--anth);color:#f4f2ee;padding:28px 0 24px}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--glow)}
+h1{margin:6px 0 8px;font-size:clamp(26px,5vw,40px);line-height:1.1}
+h2{font-size:20px;margin:28px 0 10px}
+header p{margin:0;color:#e9e4dc;text-align:justify;hyphens:auto}
+.instbtn{margin-top:14px;background:var(--acc);color:#fff;border:0;border-radius:999px;padding:11px 18px;font:600 15px 'IBM Plex Sans',sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.ihelp{position:fixed;inset:0;background:rgba(15,20,24,.6);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:16px}
+.ihelp[hidden]{display:none}
+.ibox{background:var(--paper);color:var(--ink);border-radius:16px;padding:18px 20px;max-width:440px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.ibox h3{margin:0 0 8px}.ibox ol{margin:0 0 12px;padding-left:1.2em}.ibox li{margin:4px 0}
+.ibox button{background:var(--anth);color:#fff;border:0;border-radius:999px;padding:10px 16px;font:600 14px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.stage{position:relative;margin-top:20px;overflow:hidden;border-radius:14px 14px 0 0;background:radial-gradient(circle at 50% 38%,#4a7493,#1d3a52)}
+model-viewer{display:block;width:100%;height:min(62vh,540px);background:transparent}
+.arbtn{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:var(--acc);color:#fff;border:0;border-radius:999px;padding:14px 22px;font:600 16px 'IBM Plex Sans',sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer;white-space:nowrap}
+/* Bedienung in der Handy-Ansicht (nur während AR sichtbar) */
+.arui{display:none;position:absolute;left:0;right:0;pointer-events:none}
+model-viewer[ar-status="session-started"] .arui,model-viewer[ar-status="object-placed"] .arui{display:block}
+model-viewer[ar-status="session-started"] .arbtn,model-viewer[ar-status="object-placed"] .arbtn{display:none}
+.arui.top{top:14px;text-align:center}.arui.bot{bottom:18px;padding:0 10px}
+.arui>*{pointer-events:auto}
+.arsize{display:inline-flex;gap:6px;align-items:center;background:rgba(31,35,38,.82);color:#faf8f4;border-radius:999px;padding:6px 8px;font:600 13px 'IBM Plex Sans',sans-serif}
+.arsize button{border:0;border-radius:999px;padding:8px 12px;font:600 13px 'IBM Plex Sans',sans-serif;background:#faf8f4;color:#1f2326;cursor:pointer}.arsize button.on{background:var(--acc);color:#fff}
+/* Befehlsleiste im Stil alter Point-and-Click-Adventures */
+.adv{background:#101418;color:#e9e4dc;border-radius:0 0 14px 14px;padding:12px 14px 14px;border-top:3px solid var(--acc)}
+.arui .adv{border-radius:14px;background:rgba(16,20,24,.86)}
+.say{font-family:'IBM Plex Mono',monospace;font-size:14.5px;min-height:3em;margin:0 0 10px;color:var(--glow);text-align:justify;hyphens:auto}
+.say b{color:#faf8f4;font-weight:500}
+.verbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.verbs button:last-child{grid-column:1/-1}
+.verbs button{font:600 15px 'IBM Plex Mono',monospace;background:#1c242b;color:#9fd3ff;border:2px solid #2d3b47;border-radius:8px;padding:11px 6px;cursor:pointer}
+.verbs button:hover,.verbs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.arui .verbs button{font-size:13px;padding:8px 4px}.arui .say{font-size:13px;min-height:2.6em;margin-bottom:8px}
+.ask{display:flex;gap:8px;margin-top:10px}
+.ask input{flex:1;min-width:0;font:500 15px 'IBM Plex Mono',monospace;background:#0b0e11;color:#faf8f4;border:2px solid #2d3b47;border-radius:8px;padding:11px 12px}
+.ask input::placeholder{color:#6f8597}.ask input:focus{outline:none;border-color:var(--acc)}
+.ask button{flex:none;font:600 15px 'IBM Plex Mono',monospace;background:var(--acc);color:#fff;border:2px solid var(--acc);border-radius:8px;padding:11px 14px;cursor:pointer}
+.ask button.sec{background:#1c242b;border-color:#2d3b47;color:#9fd3ff}.ask button.live{background:#c23b3b;border-color:#c23b3b;color:#fff}
+.ask button[hidden]{display:none}
+.eg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.eg span{font:500 12px 'IBM Plex Mono',monospace;color:#6f8597;width:100%}
+.eg button{font:500 13px 'IBM Plex Sans',sans-serif;background:transparent;color:#9fd3ff;border:1px solid #2d3b47;border-radius:999px;padding:7px 12px;cursor:pointer}
+.eg button:hover{background:#1c242b;border-color:var(--acc)}
+.arui .eg span{display:none}.arui .eg{margin-top:8px}.arui .eg button{font-size:12px;padding:6px 10px}
+.hint{font-size:13px;color:var(--mute);margin:8px 2px 0;text-align:justify;hyphens:auto}
+.box{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;margin:18px 0}
+.box p,.box li{text-align:justify;hyphens:auto}.box ul{margin:8px 0 0;padding-left:1.2em}.box li{margin:6px 0}
+.price{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 8px}
+@media (max-width:560px){.price{grid-template-columns:1fr}}
+.price div{border:1px solid var(--rule);border-radius:10px;padding:12px 14px}
+.price .k{font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.price .v{font-size:26px;font-weight:700;line-height:1.2;margin:2px 0 4px}.price .v small{font-size:14px;font-weight:400;color:var(--ink2)}
+.price p{margin:0;font-size:13.5px;color:var(--ink2)}
+.small{font-size:13px;color:var(--mute);margin:0}
+.who{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}.who img{border-radius:50%;flex:none}.who p{margin:0;text-align:left}.who a{color:var(--acc)}
+footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font-size:12.5px;color:var(--mute);text-align:justify;hyphens:auto}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">Humanoide Roboter zum Mieten · Demo zum Ausprobieren</div>
+  <h1>Ihr Roboter – zur Probe im eigenen Wohnzimmer</h1>
+  <p>Stellen Sie einen humanoiden Roboter mit dem Handy in Originalgröße in Ihr Zimmer und geben Sie ihm Befehle. So sehen Sie, wie groß er ist, wie er sich bewegt und ob er zu Ihnen passt – bevor Sie ihn mieten.</p>
+  <button type="button" id="inst" class="instbtn">📲 Als App installieren</button>
+</div></header>
+<div class="ihelp" id="ihelp" hidden role="dialog" aria-labelledby="ihT"><div class="ibox">
+  <h3 id="ihT">Als App auf dem Startbildschirm</h3>
+  <div id="ihBody"></div>
+  <button type="button" id="ihClose">Verstanden</button>
+</div></div>
+
+<div class="wrap">
+  <div class="stage">
+    <model-viewer id="mv" src="roboter.glb" alt="3D-Modell eines humanoiden Roboters, der Befehle ausführt" ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" camera-controls touch-action="pan-y" autoplay animation-name="Bereit" animation-crossfade-duration="350" shadow-intensity="1" exposure="1.1" camera-orbit="24deg 80deg 4.9m" min-camera-orbit="auto auto 2.5m" max-camera-orbit="auto auto 9m" camera-target="0m 0.9m 0.7m" environment-image="neutral">
+      <button slot="ar-button" class="arbtn" id="arb">📱 Ins Wohnzimmer stellen</button>
+      <div class="arui top"><span class="arsize"><button type="button" id="btO" class="on">Originalgröße</button><button type="button" id="btT">Tisch-Modell</button></span></div>
+      <div class="arui bot"><div class="adv"><p class="say" data-say></p><div class="verbs" data-verbs></div>
+        <div class="ask"><button type="button" class="sec" data-mic style="flex:1">🎤 Frage sprechen</button></div><div class="eg" data-eg="2"></div></div></div>
+    </model-viewer>
+  </div>
+  <div class="adv"><p class="say" data-say></p><div class="verbs" data-verbs></div>
+    <form class="ask" id="askF"><input id="askI" type="text" maxlength="140" autocomplete="off" placeholder="Frage oder Befehl eintippen …" aria-label="Befehl oder Frage an den Roboter">
+      <button type="button" class="sec" data-mic aria-label="Frage sprechen">🎤</button><button type="button" class="sec" id="snd" aria-label="Stimme an oder aus">🔊</button><button type="submit">Fragen</button></form>
+    <div class="eg" data-eg="6"></div>
+  </div>
+  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet. Oder stellen Sie ihm eine Frage, getippt oder gesprochen: Sie läuft über sein Gesicht, und das Orakel antwortet. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten.</p>
+
+  <div class="box">
+    <h3 style="margin:0 0 6px">Was Sie hier sehen</h3>
+    <ul>
+      <li><b>Größe:</b> 1,72 m – so groß wie ein erwachsener Mensch. In der Handy-Ansicht steht er maßstabsgetreu im Raum.</li>
+      <li><b>Fünf Befehle:</b> gehen (drei Schritte vor und zurück an den Platz), den Oberkörper drehen, sich umsehen, etwas aufheben – und das Orakel.</li>
+      <li><b>Digitales Gesicht:</b> Das Visier ist ein Bildschirm. Dort zeigt er Stimmungen – er lacht, schaut entschlossen, hört aufmerksam zu oder schaut betrübt – und dort läuft Ihre Frage ab.</li>
+      <li><b>Fragen an das Orakel:</b> Sie tippen oder sprechen Ihre Frage – auch ganz persönliche wie „Wie fühle ich mich heute?“. Dafür gibt es Beispielfragen zum Antippen. Als Beispiel antwortet das I Ging: Auf seinem Gesicht rollen die Zeichen wie bei einem Glücksrad durch, bis eines stehen bleibt – dessen Kurzdeutung liest er vor.</li>
+      <li><b>Preise:</b> Fragen Sie ihn „Was kostet die Miete?“ – oder lesen Sie unten nach.</li>
+      <li><b>Nur eine Vorschau:</b> Das Modell zeigt Größe und Bewegung. Was ein echter Roboter bei Ihnen übernimmt, klären Sie mit dem Anbieter.</li>
+    </ul>
+  </div>
+
+  <div class="box" id="preise">
+    <h3 style="margin:0 0 2px">Was kostet die Miete?</h3>
+    <div class="price">
+      <div><span class="k">Tagesmiete</span><div class="v"><small>ab</small> 99 € <small>/ Tag</small></div><p>Für Feiern, Messen oder einmalige Einsätze. Lieferung und Einweisung sind dabei.</p></div>
+      <div><span class="k">Wochenmiete</span><div class="v"><small>ab</small> 449 € <small>/ Woche</small></div><p>Für Projekte, Umzüge oder Hilfe auf Zeit.</p></div>
+      <div><span class="k">Monatsmiete</span><div class="v"><small>ab</small> 1.499 € <small>/ Monat</small></div><p>Für dauerhafte Entlastung in Betrieb oder Haushalt. Flexibel kündbar.</p></div>
+    </div>
+    <p class="small">Alle Preise zuzüglich Mehrwertsteuer. Im Preis enthalten: Lieferung, Einrichtung, Einweisung und Abholung. Angaben von der Seite von iO Robotics, Stand 07.10.2026 – verbindlich ist das Angebot des Anbieters.</p>
+  </div>
+
+  <footer>Demo zur Orientierung, kein Angebot. Das 3D-Modell ist eine frei gestaltete Darstellung und zeigt kein bestimmtes Roboter-Fabrikat. Für die Handy-Ansicht braucht Ihr Browser Zugriff auf die Kamera; es werden keine Bilder gespeichert oder übertragen. Bei der Spracheingabe wandelt Ihr Browser die Aufnahme in Text um (bei Chrome über Server von Google); die Seite selbst speichert nichts.
+    <div class="who"><img src="marco.png" alt="Marco Rietz" width="56" height="56"><p>Prototyp erstellt von Nova|LI<br><b>Marco Rietz</b> · Hardenbergstraße 31, 06456 Arnstein OT Wiederstedt<br>Tel. <a href="tel:+4915167661204">01516 7661204</a> · <a href="mailto:rietz.info@gmail.com">rietz.info@gmail.com</a></p></div>
+  </footer>
+</div>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)}, mv=$('mv');
+  // ---- Befehle: Schaltfläche, Animation im Modell, Antwort des Roboters ----
+  var CMD=[
+    ['Geh','Gehen','Ich gehe drei Schritte nach vorn und komme an meinen Platz zurück.',/\b(geh|lauf|komm)/,'mutig'],
+    ['Dreh den Oberkörper','Drehen','Einmal nach links – und einmal nach rechts.',/dreh|oberk/,'froh'],
+    ['Schau dich um','Umsehen','Ein schönes Zimmer. Ich merke mir, wo alles steht.',/schau|umseh|sieh dich/,'schau'],
+    ['Heb auf','Aufheben','Ich gehe in die Knie und hebe das für Sie auf.',/\bheb|aufheb|knie/,'mutig'],
+    ['Orakel','Orakel','',/^orakel$/,'neutral']
+  ];
+  var HEX={"1":["Kiën · Das Schöpferische (乾)","Reine, ungebremste Schaffenskraft — hier ist wirklich etwas möglich. Der Erfolg hängt aber nicht vom Glück ab, sondern davon, ob du wirklich dranbleibst und dich an das hältst, was richtig ist."],"2":["Kun · Das Empfangende (坤)","Nicht jede Stärke zeigt sich im Vorangehen. Hier liegt der Erfolg darin, sich einzufügen, zu tragen und zu folgen, statt zu drängen — wer das versucht, verliert seinen Weg; wer sich führen lässt, findet ihn."],"3":["Dschun · Die Anfangsschwierigkeit (屯)","Ein schwieriger, chaotischer Anfang trägt bereits die Anlage zum Gelingen in sich — aber nicht durch Alleingang. Hol dir jetzt Unterstützung, statt vorschnell zu handeln."],"4":["Mong · Die Jugendtorheit (蒙)","Unerfahrenheit ist keine Schande — aber du musst selbst aktiv werden und dir Rat holen, statt zu erwarten, dass man dich belehrt. Und wenn du die Antwort hast: nimm sie an, statt sie ständig zu hinterfragen."],"5":["Sü · Das Warten (die Ernährung) (需)","Warten ist hier kein Nichtstun, sondern aktive innere Stärke — du weißt, wohin du willst, und lässt dich von der Verzögerung nicht aus der Ruhe bringen. Genau diese Gelassenheit trägt dich am Ende durch die Gefahr."],"6":["Sung · Der Streit (訟)","Auch wenn du im Recht bist: Ein Streit, den du bis zum bitteren Ende durchziehst, kostet dich am Ende mehr, als er bringt. Sei bereit, auf halbem Weg einzulenken — das ist keine Niederlage, sondern die klügere Lösung."],"7":["Schï · Das Heer (師)","Eine große, geballte Kraft — sei es ein Team, ein Projekt, eine Bewegung — funktioniert nur mit einem vertrauenswürdigen Kopf an der Spitze und einem wirklich klaren, berechtigten Grund. Fehlt beides, richtet die Kraft nur Schaden an."],"8":["Bi · Das Zusammenhalten (比)","Bevor du zum Mittelpunkt einer Gemeinschaft wirst — oder dich einer anschließt — prüf ehrlich, ob du selbst die nötige Substanz dafür hast. Ein echter Sammlungspunkt zieht die Richtigen von selbst an; wer zu lange zögert, verpasst den Anschluss."],"9":["Siau Tschu · Des Kleinen Zähmungskraft (小畜)","Die Zeit für den großen Durchbruch ist noch nicht da — aber im Kleinen bewegt sich schon etwas. Bleib innerlich fest entschlossen, während du nach außen sanft und geduldig bleibst."],"10":["Lü · Das Auftreten (履)","Auch eine eigentlich riskante Nähe zu einer starken oder schwierigen Person bleibt ungefährlich, wenn du dich mit echtem Takt und ohne Anmaßung verhältst."],"11":["Tai · Der Friede (泰)","Eine Zeit echter Verbindung zwischen oben und unten, innen und außen — nichts blockiert sich mehr gegenseitig. Genau jetzt ist Wachstum und Aufbau möglich, weil die Grundlage stimmt."],"12":["Pi · Die Stockung (否)","Eine Zeit, in der die Verbindung zwischen oben und unten fehlt und die falschen Kräfte den Ton angeben — öffentliches Engagement bringt hier nichts. Bewahr deine Grundsätze, statt dich an eine falsche Grundlage anzupassen."],"13":["Tung Jen · Gemeinschaft mit Menschen (同人)","Echte, tragfähige Gemeinschaft entsteht nur aus einem wirklich gemeinsamen Ziel — nicht aus Eigeninteresse. Eine solche Gemeinschaft trägt dich auch durch schwierige, riskante Vorhaben."],"14":["Da Yu · Der Besitz von Großem (大有)","Große Fülle und Macht lassen sich nur durch echte, uneigennützige Bescheidenheit wirklich halten — nicht durch Kontrolle oder Härte."],"15":["Kiën · Die Bescheidenheit (謙)","Bescheidenheit ist kein Nachteil, sondern der zuverlässigste Weg zu echtem, dauerhaftem Erfolg — egal ob du gerade oben oder unten stehst."],"16":["Yü · Die Begeisterung (豫)","Echte Begeisterung entsteht nicht, indem du anderen etwas aufzwingst, sondern indem du triffst, was in ihnen ohnehin schon angelegt ist. Auf dieser Grundlage lassen sich auch große gemeinsame Vorhaben erfolgreich mobilisieren."],"17":["Sui · Die Nachfolge (隨)","Wer wirklich andere für sich gewinnen will, muss selbst erst lernen, sich anzupassen und zu dienen — erzwungene Gefolgschaft hält nie, echte Zustimmung schon."],"18":["Gu · Die Arbeit am Verdorbenen (蠱)","Verdorbenes, das durch Nachlässigkeit entstanden ist, lässt sich durch entschlossenes Handeln wieder in Ordnung bringen. Dafür braucht es aber gründliches Nachdenken vorher (die Ursachen wirklich verstehen) und Sorgfalt danach (den Rückfall vermeiden)."],"19":["Lin · Die Annäherung (臨)","Eine Zeit des Aufschwungs und der Annäherung zwischen Menschen unterschiedlichen Rangs — nutze sie entschlossen, aber vergiss nicht, dass jede Aufschwungphase endlich ist. Wer den kommenden Wandel rechtzeitig mitdenkt, bleibt ihm überlegen."],"20":["Guan · Die Betrachtung (der Anblick) (觀)","Der Moment höchster innerer Sammlung — bevor du überhaupt etwas tust — hat oft die stärkste, unwillkürliche Wirkung auf andere. Echtes Vorbild entsteht aus innerem Ernst, nicht aus äußerer Inszenierung."],"21":["Schï Ho · Das Durchbeißen (噬嗑)","Ein Hindernis, das eine eigentlich naheliegende Verbindung blockiert, verschwindet nicht von allein — es braucht entschlossenes Durchgreifen, um es zu beseitigen. Aber Härte allein reicht nicht, es braucht auch Fairness."],"22":["Bi · Die Anmut (賁)","Äußere Form, Schönheit und Stil können wirklich etwas bewirken — aber sie sind nie das Eigentliche. Setz sie sparsam und für kleinere Dinge ein, nicht als Ersatz für Substanz bei wichtigen Entscheidungen."],"23":["Bo · Die Zersplitterung (剝)","In einer Zeit, in der destruktive oder zersetzende Kräfte im Aufwind sind, ist aktives Handeln aussichtslos. Sich zu fügen und abzuwarten ist hier keine Schwäche, sondern die klügere Reaktion."],"24":["Fu · Die Wiederkehr (die Wendezeit) (復)","Nach einem Tiefpunkt kommt die Wende von selbst zurück, wenn du sie nicht erzwingst, sondern ihr ihren natürlichen Lauf lässt. Das ist keine Frage von Kraftakten, sondern von Geduld und dem richtigen Timing."],"25":["Wu Wang · Die Unschuld (das Unerwartete) (无妄)","Wenn du wirklich zu deinem echten, unverstellten Wesen zurückfindest, handelst du ohne Hintergedanken das Richtige — und genau das führt zu echtem Erfolg. Aber Vorsicht: Nicht jeder Impuls ist automatisch richtig, nur der, der wirklich mit deinem besten Selbst übereinstimmt."],"26":["Da Tschu · Des Großen Zähmungskraft (大畜)","Große Energie, die bewusst gezähmt und diszipliniert wird, statt sich ungebremst zu entladen, führt zu echter, täglicher Weiterentwicklung. Diese Kraft ist stark genug, um dich auch in die Öffentlichkeit und in wirklich schwierige Aufgaben zu tragen."],"27":["I · Die Mundwinkel (die Ernährung) (頤)","Woran und wie du dich \"nährst\" — mit Nahrung, aber auch mit Gedanken, Beziehungen, Zeit — verrät sehr viel über deinen Charakter. Achte bewusst darauf, was du dir und anderen wirklich zuführst."],"28":["Da Go · Des Großen Übergewicht (大過)","Eine Situation, in der die Belastung eindeutig zu groß für die tragenden Kräfte ist — wie ein Balken, der sich durchbiegt. Das lässt sich nicht mit roher Gewalt lösen, sondern nur, indem du wirklich verstehst, worum es geht, und dann entschlossen, aber klug handelst."],"29":["Kan · Das Abgründige, das Wasser (坎)","Manche Schwierigkeiten kommen nicht einmal, sondern wiederholt — die Aufgabe ist dann nicht, sie zu vermeiden, sondern sich daran zu gewöhnen und dabei sich selbst treu zu bleiben. Wie Wasser: jede Vertiefung ausfüllen, weiterfließen, nie die eigene Art verlieren."],"30":["Li · Das Haftende, das Feuer (離)","Nichts Helles oder Klares existiert für sich allein — es braucht etwas, woran es sich festmacht, um nicht einfach zu verglühen. Bewusste, freiwillige Bindung an das Richtige ist der Schlüssel zu dauerhafter Klarheit."],"31":["Hiën · Die Einwirkung (die Werbung) (咸)","Echte gegenseitige Anziehung entsteht, wenn der Stärkere sich demütig dem Schwächeren zuwendet, statt Unterordnung zu verlangen — und wenn innere Ruhe die äußere Begeisterung im richtigen Maß hält."],"32":["Hong · Die Dauer (恒)","Dauer ist keine Ruhe, sondern eine Bewegung, die sich ständig erneuert — wie Ein- und Ausatmen. Was wirklich Bestand hat, entsteht nicht durch Stillstand, sondern durch einen verlässlichen, sich wiederholenden Rhythmus mit einem festen Anker in der Mitte."],"33":["Dun · Der Rückzug (遯)","Wenn die Umstände klar gegen dich laufen, ist rechtzeitiger, würdevoller Rückzug keine Niederlage, sondern echte Stärke — der entscheidende Unterschied zu Flucht ist, dass du dabei noch die Kontrolle hast."],"34":["Da Dschuang · Des Großen Macht (大壯)","Große Kraft und Erfolg bringen die Versuchung mit sich, sich nur noch auf die eigene Stärke zu verlassen — echte Größe zeigt sich aber darin, diese Kraft weiter an das Richtige zu binden, statt sie einfach auszuspielen."],"35":["Dsin · Der Fortschritt (晉)","Echter Aufstieg funktioniert am besten, wenn jemand aus einer eigentlich abhängigen Position heraus so viel innere Klarheit und Integrität zeigt, dass andere ihm freiwillig folgen — nicht durch Anmaßung, sondern durch verdiente Anerkennung."],"36":["Ming I · Die Verfinsterung des Lichts (明夷)","In einer Zeit, in der ehrliches, klares Handeln bestraft statt belohnt wird, ist es klug, dein Licht nach außen zu verbergen — aber innerlich fest an deinen Werten festzuhalten, statt sie aufzugeben."],"37":["Gia Jen · Die Sippe (家人)","Ordnung im engsten Kreis — der Familie, dem Zuhause — ist die Grundlage für Ordnung überall sonst. Wenn jeder wirklich zu seiner Rolle steht, funktioniert das Ganze."],"38":["Kui · Der Gegensatz (睽)","Wenn du gerade mit jemandem auf einer ganz anderen Wellenlänge bist, erzwing keine großen gemeinsamen Schritte — kleine, geduldige Annäherungen sind jetzt das Einzige, was funktioniert."],"39":["Giën · Das Hemmnis (蹇)","Wenn du gerade auf ein echtes Hindernis triffst, ist Rückzug keine Kapitulation — nutz die Zeit, um dir Unterstützung und einen klaren Kopf zu holen, statt blind weiterzudrängen."],"40":["Hië · Die Befreiung (解)","Wenn sich eine schwierige Situation endlich löst, genieß die Erleichterung, aber übertreib den Triumph nicht — kehr zügig zur Normalität zurück und erledige liegen gebliebene Reste rasch, statt sie hinauszuzögern."],"41":["Sun · Die Minderung (損)","Weniger zu haben oder zu geben ist nicht automatisch schlecht — wenn es aus echter Aufrichtigkeit geschieht, kann bewusster Verzicht sogar Kraft und Klarheit bringen."],"42":["I · Die Mehrung (益)","Wahre Mehrung entsteht, wenn die Oberen bereit sind, zu verzichten, damit die Unteren gewinnen. Wo diese Bereitschaft echt ist, entsteht Vertrauen — und mit diesem Vertrauen gelingt auch Schwieriges. Das ist eine gute Zeit, um etwas anzupacken."],"43":["Guai · Der Durchbruch (die Entschlossenheit) (夬)","Wenn du einem letzten, hartnäckigen Missstand entschlossen entgegentrittst, mach es offen und öffentlich, nicht mit Gewalt oder Tricks — und fang dabei zuerst bei dir selbst an."],"44":["Gou · Das Entgegenkommen (姤)","Ein kleiner, scheinbar harmloser negativer Einfluss kann sich unbemerkt einschleichen und mächtig werden, wenn du ihn nicht gleich am Anfang ernst nimmst."],"45":["Tsui · Die Sammlung (das Versammeln) (萃)","Menschen sammeln sich um einen echten Mittelpunkt — aber dieser Mittelpunkt muss zuerst selbst innerlich gesammelt und integer sein, sonst funktioniert es nicht."],"46":["Schong · Das Empordringen (升)","Ein echter, verdienter Aufstieg braucht keine Gewalt, nur Geduld und den Mut, aktiv auf die richtigen Menschen zuzugehen — die Bedingungen stehen gerade gut für dich."],"47":["Kun · Die Bedrängnis (die Erschöpfung) (困)","Eine Zeit, in der nichts nach außen funktioniert und Worte kein Gehör finden — das ist unangenehm, aber keine Sackgasse. Wer innerlich stark bleibt, statt sich brechen zu lassen, baut in genau dieser Not die Kraft auf, die später trägt."],"48":["Dsing · Der Brunnen (井)","Manche Dinge bleiben gleich, egal wie sehr sich alles andere um dich herum verändert — deine eigenen Grundbedürfnisse und die innere Quelle, aus der du schöpfst. Der Fehler liegt nicht im Fehlen der Quelle, sondern darin, sie kurz vor dem Ziel durch Nachlässigkeit doch noch zu verpassen."],"49":["Go · Die Umwälzung (die Mauserung) (革)","Ein echter Umbruch — in einer Beziehung, einem Projekt, deinem Leben — ist legitim, wenn der Moment wirklich reif ist, du das Vertrauen der Betroffenen hast, deine Motive echt sind und die Änderung einem wirklichen Bedürfnis entspricht. Ohne diese vier Bedingungen wird aus Umwälzung nur Chaos."],"50":["Ding · Der Tiegel (鼎)","Nach dem notwendigen Umbruch geht es jetzt darum, etwas Neues, Kultiviertes aufzubauen — Substanz, die sich veredelt, statt nur bestehen zu bleiben."],"51":["Dschen · Das Erregende (das Erschüttern, der Donner) (震)","Ein plötzlicher Schreck oder eine Erschütterung ist unangenehm, aber sie hat einen Sinn: Wer gelernt hat, mit Furcht umzugehen, statt sie zu verdrängen, bleibt auch bei echtem Schrecken gefasst genug, um weiterzumachen, was ihm wichtig ist."],"52":["Gen · Das Stillehalten, der Berg (艮)","Echte Ruhe bedeutet nicht, alles um dich herum auszublenden — sie bedeutet, das eigene unruhige Ich für einen Moment zum Schweigen zu bringen, um wirklich klar zu sehen."],"53":["Dsiën · Die Entwicklung (allmählicher Fortschritt) (漸)","Manche Dinge brauchen ihre Zeit und ihre Schritte — wer versucht, sie zu überstürzen, verdirbt sie. Echter, dauerhafter Einfluss entsteht durch geduldigen Aufbau der eigenen Persönlichkeit, nicht durch schnelle Tricks."],"54":["Gui Me · Das heiratende Mädchen (歸妹)","Eine Verbindung oder Situation, die ohne die übliche, sorgfältige Vorbereitung entstanden ist, braucht besondere Vorsicht und Zurückhaltung — überstürztes Handeln macht es hier nur schlimmer."],"55":["Fong · Die Fülle (豐)","Ein seltener Höhepunkt echter Größe und Fülle ist erreichbar — aber nur, wenn du dich nicht schon jetzt vom kommenden Abklingen lähmen lässt. Sei wie die Mittagssonne: voll da, ohne Angst vor dem, was danach kommt."],"56":["Lü · Der Wanderer (旅)","Wenn du in einer fremden, unsicheren Umgebung bist — ohne den Rückhalt, den du sonst hast —, ist Bescheidenheit kein Nachteil, sondern deine wichtigste Schutzstrategie. Kleine, vorsichtige Schritte statt großer Gesten."],"57":["Sun · Das Sanfte (der Wind) (巽)","Wirkung, die von Dauer ist, entsteht nicht durch einen einzigen großen Schlag, sondern durch stetiges, geduldiges Einwirken in dieselbe Richtung — wie der Wind, der nicht mit einem Stoß, sondern durch anhaltendes Wehen etwas bewegt."],"58":["Dui · Das Heitere, der See (兌)","Echte Freude ist ansteckend und trägt weit — aber nur, wenn sie auf innerer Festigkeit beruht, nicht auf reiner Ausgelassenheit. Stark im Kern, mild nach außen."],"59":["Huan · Die Auflösung (渙)","Wenn Menschen sich voneinander entfremdet haben — durch Missverständnis, Egoismus oder Isolation —, braucht es etwas Gemeinsames, Größeres, um diese Trennung wieder aufzulösen. Ein gemeinsames Ziel oder ein verbindendes Erlebnis kann das leisten."],"60":["Dsië · Die Beschränkung (節)","Grenzen und Sparsamkeit sind sinnvoll und machen dich stark — aber nur, solange sie maßvoll bleiben. Übertriebene, harte Beschränkung schadet am Ende mehr, als sie nützt."],"61":["Dschung Fu · Innere Wahrheit (中孚)","Echte, innere Wahrhaftigkeit erreicht selbst die verschlossensten Menschen — nicht durch Nähe oder gemeinsame Interessen (die zerbrechen, sobald sich die Interessen trennen), sondern weil sie auf etwas Beständigem beruht. Ein offenes, unvoreingenommenes Herz mit einem festen, tragfähigen Kern kann auch die schwierigsten Dinge angehen."],"62":["Siau Go · Des Kleinen Übergewicht (小過)","In Ausnahmezeiten, in denen die eigentlich tragenden Kräfte gerade nicht zur Verfügung stehen, gewinnst du nicht durch große Gesten, sondern durch bewusst kleine, gewissenhafte Schritte. Bleib unten statt nach oben zu streben — das bringt Erfolg, auch wenn es unspektakulär aussieht."],"63":["Gi Dsi · Nach der Vollendung (既濟)","Wenn alles perfekt geordnet erscheint, ist genau das die gefährlichste Phase — nicht weil etwas fehlt, sondern weil die Versuchung entsteht, jetzt nachzulassen. Genau diese Nachlässigkeit ist der Anfang vom Verfall."],"64":["We Dsi · Vor der Vollendung (未濟)","Auch eine schwierige, noch unfertige Situation trägt echte Erfolgsaussicht in sich — aber nur, wenn du bis zum Schluss vorsichtig bleibst. Gerade kurz vor dem Ziel nachlässig zu werden, kann alles zunichtemachen."]};
+  // Zeichen-Nummer aus unterem und oberem Dreierzeichen (Linien von unten, 1 = durchgezogen)
+  var TRI=['111','100','010','001','000','011','101','110'];
+  var KW=[[1,34,5,26,11,9,14,43],[25,51,3,27,24,42,21,17],[6,40,29,4,7,59,64,47],[33,62,39,52,15,53,56,31],[12,16,8,23,2,20,35,45],[44,32,48,18,46,57,50,28],[13,55,63,22,36,37,30,49],[10,54,60,41,19,61,38,58]];
+  var IDLE='Bereit. Geben Sie mir einen Befehl oder stellen Sie eine Frage.';
+  function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function say(t,quiet){ document.querySelectorAll('[data-say]').forEach(function(p){ p.innerHTML='<b>Roboter:</b> '+esc(t); }); if(!quiet) speak(t); }
+  function mark(i){ document.querySelectorAll('[data-verbs] button').forEach(function(b){ b.classList.toggle('on',+b.dataset.i===i); }); }
+  // ---- Stimme ----
+  var sound=true;
+  function speak(t){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); if(!sound) return;
+    var u=new SpeechSynthesisUtterance(t.replace(/\s*\([^)]*\)/g,'').replace(/·/g,',')); u.lang='de-DE'; u.rate=1; speechSynthesis.speak(u); }
+  $('snd').addEventListener('click',function(){ sound=!sound; this.textContent=sound?'🔊':'🔇'; if(!sound&&'speechSynthesis' in window) speechSynthesis.cancel(); });
+  // ---- Digitales Gesicht: das Visier ist ein Bildschirm ----
+  var W0=384,H0=512, face={mode:'eyes',seq:[],at:[],emo:'neutral',text:'',t0:0,lines:[]}, tex=null, cv=null, cx=null;
+  function setFace(mode,o){ face.mode=mode; face.t0=performance.now(); if(o){ for(var k in o) face[k]=o[k]; } }
+  function drawFace(now){
+    if(!cx) return; var W=cv.width,H=cv.height,B='#2a8cff',t=(now-face.t0)/1000;
+    cx.setTransform(1,0,0,-1,0,H); cx.fillStyle='#000'; cx.fillRect(0,0,W,H); cx.fillStyle=B; cx.shadowColor=B; cx.shadowBlur=14;
+    if(face.mode==='text'){
+      cx.font='600 132px "IBM Plex Sans",Arial,sans-serif'; cx.textBaseline='middle';
+      var w=cx.measureText(face.text).width, x=W-40-((t*250)%(w+W-40)); cx.fillText(face.text,x,H*0.47);
+    } else if(face.mode==='spin'){
+      // Glücksrad: Zeichen rollen von oben durch, erst schnell, dann immer langsamer, bis die Antwort steht
+      var ms=now-face.t0, k=0; while(k<face.seq.length-1 && ms>=face.at[k+1]) k++;
+      var p=k===face.seq.length-1?1:Math.min(1,(ms-face.at[k])/((face.at[k+1]-face.at[k])*0.6));
+      if(k>0 && p<1) hexa(face.seq[k-1],p*H*0.75);
+      hexa(face.seq[k],(p-1)*H*0.75);
+    } else {
+      // Stimmungen: neutral, froh, zwinker, ruhig, schau, mutig, hoer, traurig
+      var e=face.emo, ph=(now/1000)%4.2, bl=ph>4.05?0.12:1, ey=H*0.36, dx=0, dy=0;
+      if(e==='schau') dx=30*Math.sin(t*1.6);
+      if(e==='froh') dy=10*Math.sin(t*7);
+      cx.lineCap='round'; cx.strokeStyle=B; cx.lineWidth=20;
+      [0.36,0.64].forEach(function(f,k){
+        var x=W*f+dx, s=k?1:-1;
+        if(e==='froh'||(e==='zwinker'&&k===0)){ arc(x,ey+62+dy,34,Math.PI*1.12,Math.PI*1.88); }          // lachende Augen
+        else if(e==='ruhig'){ arc(x,ey+16,34,Math.PI*0.12,Math.PI*0.88); }                               // geschlossene Augen
+        else if(e==='hoer'){ cx.beginPath(); cx.arc(x,ey+42,34+3*Math.sin(t*5),0,7); cx.fill(); }          // große, runde Augen
+        else { var h=(e==='mutig'?58:84)*bl; rr(x-17,ey+(84-h)/2+(e==='mutig'?10:0),34,h,Math.min(17,h/2)); }
+        if(e==='neutral'||e==='schau'){ rr(x-30,H*0.27,60,12,6); }
+        if(e==='mutig'){ line(x-30*s,H*0.26,x+26*s,H*0.30); }
+        if(e==='traurig'){ line(x-28*s,H*0.30,x+28*s,H*0.25); }
+        if(e==='hoer'){ rr(x-30,H*0.22,60,12,6); }
+      });
+      cx.lineWidth=14;
+      if(e==='froh'||e==='zwinker'){ arc(W/2,H*0.56+dy,70,Math.PI*0.2,Math.PI*0.8); }
+      if(e==='ruhig'){ arc(W/2,H*0.60,44,Math.PI*0.25,Math.PI*0.75); }
+      if(e==='traurig'){ arc(W/2,H*0.76,60,Math.PI*1.25,Math.PI*1.75); }
+      if(e==='hoer'){ cx.beginPath(); cx.arc(W/2,H*0.68,13,0,7); cx.fill(); }
+    }
+    cx.shadowBlur=0; tex.source.update();
+  }
+  function hexa(l,off){ for(var i=0;i<6;i++){ var y=H0*0.72-i*44+off; if(l[i]){ cx.fillRect(W0/2-100,y,200,22); } else { cx.fillRect(W0/2-100,y,78,22); cx.fillRect(W0/2+22,y,78,22); } } }
+  function arc(x,y,r,a,b){ cx.beginPath(); cx.arc(x,y,r,a,b); cx.stroke(); }
+  function line(a,b,c,d){ cx.lineWidth=13; cx.beginPath(); cx.moveTo(a,b); cx.lineTo(c,d); cx.stroke(); cx.lineWidth=20; }
+  function rr(x,y,w,h,r){ cx.beginPath(); cx.moveTo(x+r,y); cx.arcTo(x+w,y,x+w,y+h,r); cx.arcTo(x+w,y+h,x,y+h,r); cx.arcTo(x,y+h,x,y,r); cx.arcTo(x,y,x+w,y,r); cx.fill(); }
+  mv.addEventListener('load',function(){
+    try{
+      var m=mv.model.materials.find(function(x){return x.name==='Display';}); if(!m) return;
+      tex=mv.createCanvasTexture(); cv=tex.source.element; cv.width=384; cv.height=512; cx=cv.getContext('2d');
+      m.emissiveTexture.setTexture(tex); m.setEmissiveFactor([1,1,1]);
+      var last=0; (function loop(now){ if(now-last>45){ last=now; drawFace(now); } requestAnimationFrame(loop); })(0);
+    }catch(e){ cx=null; }
+  });
+  var back=null, t2=null, t3=null;
+  function clr(){ clearTimeout(back); clearTimeout(t2); clearTimeout(t3); }
+  // Der Namenswechsel wird erst nach dem nächsten Aktualisieren wirksam – deshalb erst danach abspielen
+  async function start(name,once){ mv.animationName=name; await mv.updateComplete; mv.currentTime=0; mv.play(once?{repetitions:1}:{}); }
+  async function run(i){
+    var c=CMD[i]; if(c[1]==='Orakel'){ ask(); return; }
+    mark(i); say(c[2]); clr(); setFace('eyes',{emo:c[4]});
+    await start(c[1],true);
+    back=setTimeout(idle,Math.max(1,mv.duration||3)*1000-120);
+  }
+  function idle(){ clr(); mark(-1); say(IDLE,true); setFace('eyes',{emo:'neutral'}); start('Bereit',false); }
+  // Orakel-Knopf: Der Nutzer stellt seine Frage selbst – getippt oder gesprochen
+  function ask(){
+    clr(); mark(CMD.length-1); setFace('eyes',{emo:'hoer'}); start('Bereit',false);
+    var ar=/session-started|object-placed/.test(mv.getAttribute('ar-status')||'');
+    say(ar?'Tippen Sie auf „Frage sprechen“ und stellen Sie Ihre Frage.':'Stellen Sie mir Ihre Frage – tippen Sie sie ein oder sprechen Sie sie. Das Orakel antwortet.');
+    if(!ar){ $('askI').placeholder='Ihre Frage an das Orakel …'; $('askI').focus(); }
+  }
+  // ---- Frage: läuft über das Gesicht, das Orakel antwortet ----
+  async function oracle(q){
+    clr(); mark(CMD.length-1); q=q.trim(); if(!/[?!.]$/.test(q)) q+='?';
+    say('Ihre Frage: „'+q+'“ – das kann ich nicht wissen. Aber ich befrage für Sie das Orakel.'); setFace('text',{text:q});
+    var lines=[]; for(var i=0;i<6;i++){ lines.push(((Math.random()<.5?2:3)+(Math.random()<.5?2:3)+(Math.random()<.5?2:3))%2); }   // drei Münzen je Linie
+    var nr=KW[TRI.indexOf(lines.slice(0,3).join(''))][TRI.indexOf(lines.slice(3).join(''))], h=HEX[nr];
+    start('Bereit',false);
+    var seq=[], at=[0], d=70;
+    while(at[at.length-1]<4300){ seq.push([0,0,0,0,0,0].map(function(){ return Math.random()<.5?1:0; })); at.push(at[at.length-1]+d); d*=1.13; }
+    seq.push(lines);
+    t2=setTimeout(function(){ setFace('spin',{seq:seq,at:at}); },3600);
+    t3=setTimeout(function(){ say('Zeichen '+nr+' – '+h[0]+'. '+h[1]); },3600+at[at.length-1]+500);
+    back=setTimeout(function(){ mark(-1); setFace('eyes',{emo:'froh'}); t2=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },2500); },3600+at[at.length-1]+20000);
+  }
+  // Beispielfragen: zeigen, dass der Roboter auch auf Persönliches eingehen kann
+  var EG=['Wie fühle ich mich heute?','Was tut mir heute gut?','Was braucht mein Herz gerade?','Worauf sollte ich heute achten?','Was darf ich heute loslassen?','Was kostet die Miete?'];
+  document.querySelectorAll('[data-eg]').forEach(function(box){
+    box.innerHTML='<span>Beispielfragen:</span>'+EG.slice(0,+box.dataset.eg).map(function(q,i){ return '<button type="button" data-q="'+i+'">'+q+'</button>'; }).join('');
+    box.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b){ e.stopPropagation(); handle(EG[+b.dataset.q]); } });
+  });
+  // Preisfrage: beantwortet der Roboter selbst (Werte von der Seite des Anbieters)
+  function price(){
+    clr(); mark(-1); setFace('text',{text:'ab 99 € / Tag  ·  ab 449 € / Woche  ·  ab 1.499 € / Monat'}); start('Bereit',false);
+    say('Mich können Sie mieten: ab 99 Euro am Tag, ab 449 Euro in der Woche oder ab 1.499 Euro im Monat – jeweils zuzüglich Mehrwertsteuer. Lieferung, Einrichtung, Einweisung und Abholung sind dabei.');
+    back=setTimeout(function(){ setFace('eyes',{emo:'froh'}); t2=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },2500); },16000);
+  }
+  function handle(t){
+    t=(t||'').trim(); if(!t) return; var low=t.toLowerCase();
+    if(/preis|kost|miet|teuer|euro/.test(low)){ price(); return; }
+    if(t.indexOf('?')<0 && t.split(/\s+/).length<=4){ for(var i=0;i<CMD.length;i++){ if(CMD[i][3].test(low)){ run(i); return; } } }
+    oracle(t);
+  }
+  document.querySelectorAll('[data-verbs]').forEach(function(box){
+    box.innerHTML=CMD.map(function(c,i){ return '<button type="button" data-i="'+i+'">'+c[0]+'</button>'; }).join('');
+    box.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b){ e.stopPropagation(); run(+b.dataset.i); } });
+  });
+  $('askF').addEventListener('submit',function(e){ e.preventDefault(); var v=$('askI').value; $('askI').value=''; $('askI').blur(); handle(v); });
+  // ---- Spracheingabe (wenn der Browser sie anbietet) ----
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mics=document.querySelectorAll('[data-mic]');
+  if(!SR){ mics.forEach(function(b){ b.hidden=true; }); }
+  else{
+    var rec=null;
+    function micOn(on){ mics.forEach(function(b){ b.classList.toggle('live',on); }); }
+    mics.forEach(function(b){ b.addEventListener('click',function(e){ e.stopPropagation();
+      if(rec){ rec.stop(); return; }
+      if('speechSynthesis' in window) speechSynthesis.cancel();
+      rec=new SR(); rec.lang='de-DE'; rec.interimResults=false; rec.maxAlternatives=1;
+      rec.onresult=function(ev){ handle(ev.results[0][0].transcript); };
+      rec.onerror=function(ev){ say(ev.error==='not-allowed'?'Ich darf das Mikrofon nicht benutzen. Bitte im Browser erlauben.':'Ich habe Sie nicht verstanden. Bitte noch einmal.',true); setFace('eyes',{emo:'traurig'}); t3=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },3000); };
+      rec.onend=function(){ rec=null; micOn(false); if(face.emo==='hoer') setFace('eyes',{emo:'neutral'}); };
+      micOn(true); say('Ich höre zu …',true); setFace('eyes',{emo:'hoer'}); rec.start();
+    }); });
+  }
+  say(IDLE,true);
+  // ---- Größe in der Handy-Ansicht ----
+  function setScale(o){ mv.setAttribute('scale',o?'1 1 1':'0.2 0.2 0.2'); $('btO').classList.toggle('on',o); $('btT').classList.toggle('on',!o); }
+  $('btO').addEventListener('click',function(e){e.stopPropagation();setScale(true)}); $('btT').addEventListener('click',function(e){e.stopPropagation();setScale(false)});
+  mv.addEventListener('ar-status',function(e){ if(e.detail.status==='not-presenting'){ setScale(true); } });
+  // ---- Als App installieren ----
+  var deferred=null, inst=$('inst');
+  var standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  if(standalone) inst.hidden=true;
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferred=e; inst.hidden=false; });
+  window.addEventListener('appinstalled',function(){ inst.hidden=true; deferred=null; });
+  function help(html){ $('ihBody').innerHTML=html; $('ihelp').hidden=false; }
+  $('ihClose').addEventListener('click',function(){ $('ihelp').hidden=true; });
+  inst.addEventListener('click',async function(){
+    if(deferred){ deferred.prompt(); var r=await deferred.userChoice; if(r&&r.outcome==='accepted'){ inst.hidden=true; } deferred=null; return; }
+    var ua=navigator.userAgent;
+    if(/iPhone|iPad|iPod/.test(ua)){ help('<ol><li>Unten in Safari auf <b>Teilen</b> tippen (Quadrat mit Pfeil nach oben).</li><li><b>„Zum Home-Bildschirm“</b> wählen.</li><li>Oben rechts <b>„Hinzufügen“</b> tippen – fertig.</li></ol>'); }
+    else if(/Android/.test(ua)){ help('<ol><li>Die Seite in <b>Chrome</b> öffnen.</li><li>Oben rechts auf <b>⋮</b> tippen.</li><li><b>„App installieren“</b> oder <b>„Zum Startbildschirm hinzufügen“</b> wählen.</li></ol>'); }
+    else { help('<ol><li>In Chrome oder Edge rechts in der Adresszeile auf das <b>Installieren-Symbol</b> klicken.</li><li>Oder im Browsermenü <b>„App installieren“</b> wählen.</li></ol><p>Am besten funktioniert die App auf dem Handy – dort auch mit Kamera im Wohnzimmer.</p>'); }
+  });
+  if('serviceWorker' in navigator && location.protocol==='https:'){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
+})();
+</script>
+</body>
+</html>
