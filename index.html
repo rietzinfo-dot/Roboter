@@ -41,10 +41,12 @@ model-viewer{display:block;width:100%;height:min(62vh,540px);background:transpar
 .arui{display:none;position:absolute;left:0;right:0;pointer-events:none}
 model-viewer[ar-status="session-started"] .arui,model-viewer[ar-status="object-placed"] .arui{display:block}
 model-viewer[ar-status="session-started"] .arbtn,model-viewer[ar-status="object-placed"] .arbtn{display:none}
-.arlock{display:none;position:absolute;inset:0}
+.arlock{display:none;position:absolute;inset:0;touch-action:none}
 model-viewer.locked[ar-status="session-started"] .arlock,model-viewer.locked[ar-status="object-placed"] .arlock{display:block}
 model-viewer.noui .arui.bot{display:none!important}
 .arsize{flex-wrap:wrap;justify-content:center}.arsize i{width:1px;height:20px;background:#5b6268}
+.arhint{display:block;margin:8px auto 0;max-width:330px;background:rgba(16,20,24,.78);color:#faf8f4;border-radius:10px;padding:7px 12px;font:500 13px 'IBM Plex Sans',sans-serif;pointer-events:none}
+.arhint:empty{display:none}
 .arui.top{top:14px;text-align:center}.arui.bot{bottom:18px;padding:0 10px}
 .arui>*{pointer-events:auto}
 .arsize{display:inline-flex;gap:6px;align-items:center;background:rgba(31,35,38,.82);color:#faf8f4;border-radius:999px;padding:6px 8px;font:600 13px 'IBM Plex Sans',sans-serif}
@@ -102,7 +104,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     <model-viewer id="mv" src="roboter.glb" alt="3D-Modell eines humanoiden Roboters, der Befehle ausführt" ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" camera-controls touch-action="pan-y" autoplay animation-name="Bereit" animation-crossfade-duration="350" shadow-intensity="1" exposure="1.1" camera-orbit="24deg 80deg 4.9m" min-camera-orbit="auto auto 2.5m" max-camera-orbit="auto auto 9m" camera-target="0m 0.9m 0.7m" environment-image="neutral">
       <button slot="ar-button" class="arbtn" id="arb">📱 Ins Wohnzimmer stellen</button>
       <div class="arlock" id="arlock"></div>
-      <div class="arui top"><span class="arsize"><button type="button" id="btO" class="on">Originalgröße</button><button type="button" id="btT">Tisch-Modell</button><i></i><button type="button" id="btL">📌 Feststellen</button><button type="button" id="btU" class="on">💬 Befehle</button></span></div>
+      <div class="arui top"><span class="arsize"><button type="button" id="btO" class="on">Originalgröße</button><button type="button" id="btT">Tisch-Modell</button><i></i><button type="button" id="btL">📌 Abstellen</button><button type="button" id="btU" class="on">💬 Befehle</button></span><span class="arhint" id="arhint"></span></div>
       <div class="arui bot"><div class="adv"><p class="say" data-say></p><div class="verbs" data-verbs></div>
         <div class="ask"><button type="button" class="sec" data-mic style="flex:1">🎤 Frage sprechen</button></div><div class="eg" data-eg="2"></div></div></div>
     </model-viewer>
@@ -112,7 +114,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
       <button type="button" class="sec" data-mic aria-label="Frage sprechen">🎤</button><button type="button" class="sec" id="snd" aria-label="Stimme an oder aus">🔊</button><button type="submit">Fragen</button></form>
     <div class="eg" data-eg="6"></div>
   </div>
-  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet. Oder stellen Sie ihm eine Frage, getippt oder gesprochen: Sie läuft über sein Gesicht, und das Orakel antwortet. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Steht er richtig, tippen Sie oben auf „Feststellen“ – dann bleibt er an seinem Platz, und Sie können um ihn herumgehen. Mit „Befehle“ blenden Sie die Befehlsleiste aus und wieder ein.</p>
+  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet. Oder stellen Sie ihm eine Frage, getippt oder gesprochen: Sie läuft über sein Gesicht, und das Orakel antwortet. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Mit „Befehle“ blenden Sie die Befehlsleiste aus und wieder ein.</p>
 
   <div class="box">
     <h3 style="margin:0 0 6px">Was Sie hier sehen</h3>
@@ -289,16 +291,45 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   }
   say(IDLE,true);
   // ---- Größe in der Handy-Ansicht ----
-  function setScale(o){ mv.setAttribute('scale',o?'1 1 1':'0.2 0.2 0.2'); $('btO').classList.toggle('on',o); $('btT').classList.toggle('on',!o); }
+  var setScale=function(o){};
   $('btO').addEventListener('click',function(e){e.stopPropagation();setScale(true)}); $('btT').addEventListener('click',function(e){e.stopPropagation();setScale(false)});
-  // Feststellen: Berührungen verschieben, drehen und vergrößern den Roboter dann nicht mehr – man kann um ihn herumgehen
-  function setLock(on){ mv.classList.toggle('locked',on); $('btL').classList.toggle('on',on); $('btL').textContent=on?'📌 Steht fest':'📌 Feststellen'; }
+  // ---- Abstellen im Raum ----
+  // Erst wird der Roboter an seinen Platz gezogen, ein Tipp auf den Bildschirm stellt ihn ab. Danach steht er fest:
+  // Berührungen ändern nur noch die Größe (zwei Finger). Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf.
+  var inAR=false, K=1;
+  function hint(t){ $('arhint').textContent=t; }
+  function applyK(){ mv.setAttribute('scale',K+' '+K+' '+K); $('btO').classList.toggle('on',Math.abs(K-1)<.02); $('btT').classList.toggle('on',Math.abs(K-.2)<.02); }
+  setScale=function(o){ K=o?1:0.2; applyK(); };
+  function setLock(on){
+    mv.classList.toggle('locked',on); $('btL').classList.toggle('on',on); $('btL').textContent=on?'✋ Umstellen':'📌 Abstellen';
+    if(inAR) hint(on?'Steht fest. Zwei Finger: Größe ändern. Tipp auf den Roboter: umstellen.':'Roboter an seinen Platz ziehen – dann einmal auf den Bildschirm tippen: Er steht.');
+  }
   function setUi(on){ mv.classList.toggle('noui',!on); $('btU').classList.toggle('on',on); }
   $('btL').addEventListener('click',function(e){ e.stopPropagation(); setLock(!mv.classList.contains('locked')); });
   $('btU').addEventListener('click',function(e){ e.stopPropagation(); setUi(mv.classList.contains('noui')); });
   // Tippen auf Knöpfe und auf die Sperrfläche darf den Roboter im Raum nicht versetzen
   document.querySelectorAll('.arui > *, #arlock').forEach(function(el){ el.addEventListener('beforexrselect',function(e){ e.preventDefault(); }); });
-  mv.addEventListener('ar-status',function(e){ if(e.detail.status==='not-presenting'){ setScale(true); setLock(false); setUi(true); } });
+  // Sperrfläche: zwei Finger = Größe, kurzer Tipp auf den Roboter = wieder aufnehmen
+  var pts={}, d0=0, k0=1, tap=null, lock=$('arlock');
+  function dist(){ var a=Object.keys(pts); if(a.length<2) return 0; var p=pts[a[0]], q=pts[a[1]]; return Math.hypot(p.x-q.x,p.y-q.y); }
+  lock.addEventListener('pointerdown',function(e){ e.stopPropagation(); pts[e.pointerId]={x:e.clientX,y:e.clientY};
+    var n=Object.keys(pts).length; if(n===1){ tap={x:e.clientX,y:e.clientY,t:performance.now()}; } else { tap=null; d0=dist(); k0=K; } });
+  lock.addEventListener('pointermove',function(e){ if(!pts[e.pointerId]) return; pts[e.pointerId]={x:e.clientX,y:e.clientY};
+    if(tap && Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>12) tap=null;
+    if(Object.keys(pts).length>=2 && d0>0){ K=Math.max(0.1,Math.min(1.6,k0*dist()/d0)); applyK(); } });
+  function up(e){ e.stopPropagation(); delete pts[e.pointerId]; d0=0;
+    if(tap && e.type==='pointerup' && performance.now()-tap.t<400){ var hit=null; try{ hit=mv.positionAndNormalFromPoint(tap.x,tap.y); }catch(_){}
+      if(hit) setLock(false); }
+    tap=null; }
+  lock.addEventListener('pointerup',up); lock.addEventListener('pointercancel',up); lock.addEventListener('click',function(e){ e.stopPropagation(); });
+  // Solange er nicht abgestellt ist: ein kurzer Tipp irgendwo auf den Bildschirm stellt ihn ab
+  var ft=null;
+  mv.addEventListener('pointerdown',function(e){ ft=(inAR && !mv.classList.contains('locked') && !(e.target.closest && e.target.closest('.arui')))?{x:e.clientX,y:e.clientY,t:performance.now()}:null; },true);
+  mv.addEventListener('pointerup',function(e){ if(ft && performance.now()-ft.t<400 && Math.hypot(e.clientX-ft.x,e.clientY-ft.y)<12) setLock(true); ft=null; },true);
+  mv.addEventListener('ar-status',function(e){ var st=e.detail.status;
+    if(st==='not-presenting'||st==='failed'){ inAR=false; setScale(true); setLock(false); setUi(true); hint(''); }
+    else if(!inAR){ inAR=true; setLock(false); hint('Handy langsam über den Boden oder Tisch bewegen, bis der Roboter erscheint. Dann an seinen Platz ziehen und einmal auf den Bildschirm tippen: Er steht.'); }
+  });
   // ---- Als App installieren ----
   var deferred=null, inst=$('inst');
   var standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
