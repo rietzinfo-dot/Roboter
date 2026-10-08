@@ -72,6 +72,10 @@ model-viewer.locked[ar-status="session-started"] .arlock,model-viewer.locked[ar-
 .arsize{margin-right:44px}.arsize button{font-size:12.5px!important;padding:8px 10px!important}
 .phead{display:flex;justify-content:space-between;align-items:center;margin:-4px 0 8px;font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#6f8597}
 .phead button{background:transparent;border:0;color:#9fd3ff;font:600 13px 'IBM Plex Sans',sans-serif;padding:6px 4px;cursor:pointer}
+.phead #arBack{background:#ffbf00;color:#05101f;border-radius:999px;padding:7px 14px;margin-right:6px;font-weight:700;text-transform:none;letter-spacing:0}
+.phead #arMin{font-size:18px;padding:4px 8px;color:#e9e4dc}
+.verbs button:disabled{opacity:.45;cursor:default}
+.ask input::placeholder{font:400 12px 'IBM Plex Sans',sans-serif}
 .arpill{position:absolute;right:10px;bottom:0;background:rgba(16,20,24,.86);color:#9fd3ff;border:1px solid #2d3b47;border-radius:999px;padding:9px 14px;font:600 13px 'IBM Plex Sans',sans-serif}
 .arui [hidden]{display:none!important}
 .chat{max-height:26vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
@@ -121,7 +125,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
       <div class="arui top"><span class="arsize"><button type="button" id="btO" class="on">Originalgröße</button><button type="button" id="btT">Tisch-Modell</button><button type="button" id="btL">📌 Abstellen</button></span><span class="arhint" id="arhint"></span></div>
       <div class="arui bot">
         <div class="adv" id="arP">
-          <div class="phead"><span id="arT">Befehle</span><span><button type="button" id="arBack" hidden>‹ Befehle</button><button type="button" id="arMin" aria-label="Leiste einklappen">▾ einklappen</button></span></div>
+          <div class="phead"><span id="arT">Befehle</span><span><button type="button" id="arBack" hidden>‹ Befehle</button><button type="button" id="arMin" aria-label="Leiste schließen">✕</button></span></div>
           <div id="arCmd"><div class="verbs" data-verbs></div></div>
           <div id="arChat" hidden>
             <div class="chat" data-chat></div>
@@ -137,7 +141,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     <form class="ask" id="askF" hidden><input id="askI" type="text" maxlength="140" autocomplete="off" placeholder="z. B. Worauf sollte ich heute achten?" aria-label="Befehl oder Frage an den Roboter">
       <button type="button" class="sec" data-mic aria-label="Gedrückt halten und sprechen" title="Gedrückt halten und sprechen">🎤</button><button type="button" class="sec" id="snd" aria-label="Stimme an oder aus">🔊</button><button type="submit">Fragen</button></form>
   </div>
-  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet mit einem kurzen Satz. Mit „LI|Lebensimpuls“ öffnet sich die Fragezeile: Tippen Sie Ihre Frage ein oder halten Sie das Mikrofon gedrückt und sprechen Sie – sie läuft über sein Gesicht, und er gibt Ihnen einen Impuls für Ihren Tag. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf seinem Podest auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Die Befehlsleiste lässt sich einklappen. Ein Tipp auf „LI|Lebensimpuls“ öffnet das Fragefeld: tippen oder das Mikrofon gedrückt halten und sprechen.</p>
+  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet mit einem kurzen Satz. Mit „LI|Lebensimpuls“ öffnet sich die Fragezeile: Tippen Sie Ihre Frage ein oder halten Sie das Mikrofon gedrückt und sprechen Sie – sie läuft über sein Gesicht, und er gibt Ihnen einen Impuls für Ihren Tag. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf seinem Podest auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Die Befehlsleiste lässt sich mit dem ✕ schließen und über „Befehle“ wieder öffnen. Ein Tipp auf „LI|Lebensimpuls“ öffnet das Fragefeld: tippen oder das Mikrofon gedrückt halten und sprechen.</p>
 
   <div class="box">
     <h3 style="margin:0 0 6px">Was Sie hier sehen</h3>
@@ -188,6 +192,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   var sound=true;
   function speak(t){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); if(!sound) return;
     var u=new SpeechSynthesisUtterance(t.replace(/\s*\([^)]*\)/g,'').replace(/·/g,',')); u.lang='de-DE'; u.rate=1; speechSynthesis.speak(u); }
+  window.addEventListener('pointerdown',function w(){ window.removeEventListener('pointerdown',w,true); try{ if('speechSynthesis' in window){ speechSynthesis.getVoices(); var u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang='de-DE'; speechSynthesis.speak(u); } }catch(_){ } },true);
   $('snd').addEventListener('click',function(){ sound=!sound; this.textContent=sound?'🔊':'🔇'; if(!sound&&'speechSynthesis' in window) speechSynthesis.cancel(); });
   // ---- Digitales Gesicht: das Visier ist ein Bildschirm ----
   var W0=384,H0=512, face={mode:'eyes',seq:[],at:[],emo:'neutral',text:'',t0:0,lines:[]}, tex=null, cv=null, cx=null;
@@ -238,18 +243,29 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
       var m=mv.model.materials.find(function(x){return x.name==='Display';}); if(!m) return;
       tex=mv.createCanvasTexture(); cv=tex.source.element; cv.width=384; cv.height=512; cx=cv.getContext('2d');
       m.emissiveTexture.setTexture(tex); m.setEmissiveFactor([1,1,1]);
+      (async function(){ try{ for(var n of ['Gehen','Drehen','Umsehen','Bereit']){ mv.animationName=n; await mv.updateComplete; } mv.play(); }catch(_){ } })();
       var last=0; (function loop(now){ if(now-last>45){ last=now; drawFace(now); } requestAnimationFrame(loop); })(0);
     }catch(e){ cx=null; }
   });
   var back=null, t2=null, t3=null;
-  function clr(){ clearTimeout(back); clearTimeout(t2); clearTimeout(t3); }
+  function lockBtns(){}
+  function clr(){ clearTimeout(back); clearTimeout(t2); clearTimeout(t3); clearInterval(watch); busy=false; lockBtns(false); }
   // Der Namenswechsel wird erst nach dem nächsten Aktualisieren wirksam – deshalb erst danach abspielen
   async function start(name,once){ mv.animationName=name; await mv.updateComplete; mv.currentTime=0; mv.play(once?{repetitions:1}:{}); }
+  // Ein Befehl läuft genau einmal: Solange er läuft, sind die Knöpfe gesperrt. Das Ende wird an der Uhr der Bewegung
+  // selbst abgelesen (nicht an der Wanduhr), damit sie auch auf langsamen Handys nicht von vorn beginnt.
+  var busy=false, watch=null;
+  lockBtns=function(on){ document.querySelectorAll('[data-verbs] button').forEach(function(b){ b.disabled=on; }); };
   async function run(i){
+    if(busy) return;
     var c=CMD[i]; if(c[1]==='Orakel'){ ask(); return; }
-    mark(i); say(c[2]); clr(); setFace('eyes',{emo:c[4]}); $('askF').hidden=true; $('sayP').hidden=false;
+    clr(); busy=true; lockBtns(true); mark(i); say(c[2],true); setFace('eyes',{emo:c[4]}); $('askF').hidden=true; $('sayP').hidden=false;
     await start(c[1],true);
-    back=setTimeout(idle,Math.max(1,mv.duration||3)*1000-120);
+    setTimeout(function(){ speak(c[2]); },150);
+    var last=0, t0=performance.now();
+    watch=setInterval(function(){ var t=mv.currentTime, d=mv.duration||0;
+      if((d && t>=d-0.12) || t<last-0.3 || performance.now()-t0>(d||10)*1000+2000){ idle(); return; }
+      last=t; },40);
   }
   function idle(){ clr(); mark(-1); say(IDLE,true); $('sayP').hidden=true; setFace('eyes',{emo:'neutral'}); start('Bereit',false); }
   // Orakel-Knopf: Der Nutzer stellt seine Frage selbst – getippt oder gesprochen
@@ -273,7 +289,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     back=setTimeout(function(){ mark(-1); setFace('eyes',{emo:'froh'}); t2=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },2500); },3600+at[at.length-1]+20000);
   }
   function handle(t){
-    t=(t||'').trim(); if(!t) return; var low=t.toLowerCase();
+    t=(t||'').trim(); if(!t || busy) return; var low=t.toLowerCase();
     if(t.indexOf('?')<0 && t.split(/\s+/).length<=4){ for(var i=0;i<CMD.length;i++){ if(CMD[i][3].test(low)){ run(i); return; } } }
     chat('du',t); oracle(t);
   }
