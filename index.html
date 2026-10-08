@@ -12,7 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Roboter-Probe">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Einen humanoiden Roboter per Handy ins eigene Wohnzimmer stellen und ihm Befehle geben.">
+<meta name="description" content="Einen humanoiden Roboter per Handy ins eigene Wohnzimmer stellen, ihm Befehle geben und sich einen Lebensimpuls für den Tag holen.">
 <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -55,17 +55,16 @@ model-viewer.locked[ar-status="session-started"] .arlock,model-viewer.locked[ar-
 .arui .adv{border-radius:14px;background:rgba(16,20,24,.86)}
 .say{font-family:'IBM Plex Mono',monospace;font-size:14.5px;min-height:3em;margin:0 0 10px;color:var(--glow);text-align:justify;hyphens:auto}
 .say b{color:#faf8f4;font-weight:500}
-.verbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.verbs button:last-child{grid-column:1/-1}
-.verbs button{font:600 15px 'IBM Plex Mono',monospace;background:#1c242b;color:#9fd3ff;border:2px solid #2d3b47;border-radius:8px;padding:11px 6px;cursor:pointer}
+.verbs{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.1fr) minmax(0,1.1fr) minmax(0,1.75fr);gap:6px}
+.verbs button{font:600 clamp(11.5px,3.2vw,15px) 'IBM Plex Sans',sans-serif;white-space:nowrap;background:#1c242b;color:#9fd3ff;border:2px solid #2d3b47;border-radius:8px;padding:11px 6px;cursor:pointer}
 .verbs button:hover,.verbs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
-.arui .verbs button{font-size:13px;padding:8px 4px}.arui .say{font-size:13px;min-height:2.6em;margin-bottom:8px}
+.arui .verbs button{font-size:clamp(11px,3.2vw,13px);padding:9px 2px}.arui .say{font-size:13px;min-height:2.6em;margin-bottom:8px}
 .ask{display:flex;gap:8px;margin-top:10px}
 .ask input{flex:1;min-width:0;font:500 15px 'IBM Plex Mono',monospace;background:#0b0e11;color:#faf8f4;border:2px solid #2d3b47;border-radius:8px;padding:11px 12px}
 .ask input::placeholder{color:#6f8597}.ask input:focus{outline:none;border-color:var(--acc)}
 .ask button{flex:none;font:600 15px 'IBM Plex Mono',monospace;background:var(--acc);color:#fff;border:2px solid var(--acc);border-radius:8px;padding:11px 14px;cursor:pointer}
 .ask button.sec{background:#1c242b;border-color:#2d3b47;color:#9fd3ff}.ask button.live{background:#c23b3b;border-color:#c23b3b;color:#fff}
-.ask button[hidden]{display:none}
+.ask button[hidden],.ask[hidden]{display:none}
 .eg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
 .eg span{font:500 12px 'IBM Plex Mono',monospace;color:#6f8597;width:100%}
 .eg button{font:500 13px 'IBM Plex Sans',sans-serif;background:transparent;color:#9fd3ff;border:1px solid #2d3b47;border-radius:999px;padding:7px 12px;cursor:pointer}
@@ -76,7 +75,7 @@ model-viewer.locked[ar-status="session-started"] .arlock,model-viewer.locked[ar-
 .arpill{position:absolute;right:10px;bottom:0;background:rgba(16,20,24,.86);color:#9fd3ff;border:1px solid #2d3b47;border-radius:999px;padding:9px 14px;font:600 13px 'IBM Plex Sans',sans-serif}
 .arui [hidden]{display:none!important}
 .chat{max-height:26vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
-.chat:empty::before{content:'Stellen Sie Ihre Frage – tippen oder Mikrofon gedrückt halten und sprechen.';font:500 13px 'IBM Plex Sans',sans-serif;color:#8fa3b3}
+.chat:empty::before{content:'Was bewegt Sie heute? Tippen oder Mikrofon gedrückt halten und sprechen.';font:500 13px 'IBM Plex Sans',sans-serif;color:#8fa3b3}
 .chat p{margin:0;padding:8px 11px;border-radius:12px;font:400 13.5px/1.4 'IBM Plex Sans',sans-serif;max-width:88%}
 .chat .du{align-self:flex-end;background:var(--acc);color:#fff;border-bottom-right-radius:3px}
 .chat .bot{align-self:flex-start;background:#1c242b;color:#e9e4dc;border-bottom-left-radius:3px;text-align:justify;hyphens:auto}
@@ -85,12 +84,17 @@ model-viewer.locked[ar-status="session-started"] .arlock,model-viewer.locked[ar-
 .hint{font-size:13px;color:var(--mute);margin:8px 2px 0;text-align:justify;hyphens:auto}
 .box{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;margin:18px 0}
 .box p,.box li{text-align:justify;hyphens:auto}.box ul{margin:8px 0 0;padding-left:1.2em}.box li{margin:6px 0}
-.price{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 8px}
+.box.io{background:#05101f;border-color:#1a3050;color:#fff}
+.box.io h3{color:#fff}.box.io h3 b{color:#ffbf00}
+.price{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0 10px}
 @media (max-width:560px){.price{grid-template-columns:1fr}}
-.price div{border:1px solid var(--rule);border-radius:10px;padding:12px 14px}
-.price .k{font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
-.price .v{font-size:26px;font-weight:700;line-height:1.2;margin:2px 0 4px}.price .v small{font-size:14px;font-weight:400;color:var(--ink2)}
-.price p{margin:0;font-size:13.5px;color:var(--ink2)}
+.price>div{position:relative;background:#0a1829;border:1px solid #1a3050;border-radius:12px;padding:16px 16px 14px}
+.price>div.top{border-color:#ffbf00;box-shadow:0 0 22px rgba(255,191,0,.22)}
+.price>div.top::before{content:'Beliebt';position:absolute;top:-10px;right:14px;background:#ffbf00;color:#05101f;font:700 11px 'IBM Plex Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:3px 10px}
+.price .k{font:600 12px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#ffbf00}
+.price .v{font-size:28px;font-weight:700;line-height:1.2;margin:4px 0 6px;color:#fff}.price .v small{font-size:14px;font-weight:400;color:#a9b8c9}
+.price p{margin:0;font-size:13.5px;color:#d5dde7;text-align:left;hyphens:manual}
+.box.io .small{font-size:13px;color:#8fa1b5;margin:0}
 .small{font-size:13px;color:var(--mute);margin:0}
 .who{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}.who img{border-radius:50%;flex:none}.who p{margin:0;text-align:left}.who a{color:var(--acc)}
 footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font-size:12.5px;color:var(--mute);text-align:justify;hyphens:auto}
@@ -111,7 +115,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
 
 <div class="wrap">
   <div class="stage">
-    <model-viewer id="mv" src="roboter.glb" alt="3D-Modell eines humanoiden Roboters, der Befehle ausführt" ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" camera-controls touch-action="pan-y" autoplay animation-name="Bereit" animation-crossfade-duration="350" shadow-intensity="1" exposure="1.1" camera-orbit="24deg 80deg 5.3m" min-camera-orbit="auto auto 2.5m" max-camera-orbit="auto auto 9m" camera-target="0m 0.9m 0m" environment-image="neutral">
+    <model-viewer id="mv" src="roboter.glb?v=15" alt="3D-Modell eines humanoiden Roboters, der Befehle ausführt" ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" camera-controls touch-action="pan-y" autoplay animation-name="Bereit" animation-crossfade-duration="200" shadow-intensity="1" exposure="1.1" camera-orbit="24deg 80deg 5.6m" min-camera-orbit="auto auto 2.5m" max-camera-orbit="auto auto 9m" camera-target="0m 1.0m 0m" environment-image="neutral">
       <button slot="ar-button" class="arbtn" id="arb">📱 Ins Wohnzimmer stellen</button>
       <div class="arlock" id="arlock"></div>
       <div class="arui top"><span class="arsize"><button type="button" id="btO" class="on">Originalgröße</button><button type="button" id="btT">Tisch-Modell</button><button type="button" id="btL">📌 Abstellen</button></span><span class="arhint" id="arhint"></span></div>
@@ -121,38 +125,36 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
           <div id="arCmd"><div class="verbs" data-verbs></div></div>
           <div id="arChat" hidden>
             <div class="chat" data-chat></div>
-            <div class="eg" data-eg="2"></div>
-            <form class="ask" id="arF"><input id="arI" type="text" maxlength="140" autocomplete="off" placeholder="Frage ans Orakel …" aria-label="Frage ans Orakel"><button type="button" class="sec" data-mic aria-label="Gedrückt halten und sprechen">🎤</button><button type="submit" aria-label="Senden">➤</button></form>
+            <form class="ask" id="arF"><input id="arI" type="text" maxlength="140" autocomplete="off" placeholder="z. B. Was tut mir heute gut?" aria-label="Ihre Frage für den Lebensimpuls"><button type="button" class="sec" data-mic aria-label="Gedrückt halten und sprechen">🎤</button><button type="submit" aria-label="Senden">➤</button></form>
           </div>
         </div>
         <button type="button" class="arpill" id="arOpen" hidden>▴ Befehle</button>
       </div>
     </model-viewer>
   </div>
-  <div class="adv"><p class="say" data-say></p><div class="verbs" data-verbs></div>
-    <form class="ask" id="askF"><input id="askI" type="text" maxlength="140" autocomplete="off" placeholder="Frage oder Befehl eintippen …" aria-label="Befehl oder Frage an den Roboter">
+  <div class="adv"><div class="verbs" data-verbs></div>
+    <p class="say" data-say id="sayP" hidden style="margin:10px 0 0"></p>
+    <form class="ask" id="askF" hidden><input id="askI" type="text" maxlength="140" autocomplete="off" placeholder="z. B. Worauf sollte ich heute achten?" aria-label="Befehl oder Frage an den Roboter">
       <button type="button" class="sec" data-mic aria-label="Gedrückt halten und sprechen" title="Gedrückt halten und sprechen">🎤</button><button type="button" class="sec" id="snd" aria-label="Stimme an oder aus">🔊</button><button type="submit">Fragen</button></form>
-    <div class="eg" data-eg="6"></div>
   </div>
-  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet. Oder stellen Sie ihm eine Frage, getippt oder gesprochen: Sie läuft über sein Gesicht, und das Orakel antwortet. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Die Befehlsleiste lässt sich einklappen. Ein Tipp auf „Orakel“ öffnet das Fragefeld: tippen oder das Mikrofon gedrückt halten und sprechen.</p>
+  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet mit einem kurzen Satz. Mit „LI|Lebensimpuls“ öffnet sich die Fragezeile: Tippen Sie Ihre Frage ein oder halten Sie das Mikrofon gedrückt und sprechen Sie – sie läuft über sein Gesicht, und er gibt Ihnen einen Impuls für Ihren Tag. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf seinem Podest auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Die Befehlsleiste lässt sich einklappen. Ein Tipp auf „LI|Lebensimpuls“ öffnet das Fragefeld: tippen oder das Mikrofon gedrückt halten und sprechen.</p>
 
   <div class="box">
     <h3 style="margin:0 0 6px">Was Sie hier sehen</h3>
     <ul>
       <li><b>Größe:</b> 1,72 m – so groß wie ein erwachsener Mensch. In der Handy-Ansicht steht er maßstabsgetreu im Raum.</li>
-      <li><b>Fünf Befehle:</b> gehen (drei Schritte vor und zurück an den Platz), den Oberkörper drehen, sich umsehen, etwas aufheben – und das Orakel.</li>
+      <li><b>Befehle:</b> gehen (vom Podest steigen, zwei Schritte, umdrehen und wieder hinauf), den Oberkörper drehen, sich umsehen – und LI|Lebensimpuls.</li>
       <li><b>Digitales Gesicht:</b> Das Visier ist ein Bildschirm. Dort zeigt er Stimmungen – er lacht, schaut entschlossen, hört aufmerksam zu oder schaut betrübt – und dort läuft Ihre Frage ab.</li>
-      <li><b>Fragen an das Orakel:</b> Sie tippen oder sprechen Ihre Frage – auch ganz persönliche wie „Wie fühle ich mich heute?“. Dafür gibt es Beispielfragen zum Antippen. Als Beispiel antwortet das I Ging: Auf seinem Gesicht rollen die Zeichen wie bei einem Glücksrad durch, bis eines stehen bleibt – dessen Kurzdeutung liest er vor.</li>
-      <li><b>Preise:</b> Fragen Sie ihn „Was kostet die Miete?“ – oder lesen Sie unten nach.</li>
+      <li><b>LI|Lebensimpuls:</b> Stellen Sie eine Frage, die Sie heute bewegt – etwa „Worauf sollte ich heute achten?“. Der Roboter gibt Ihnen dazu einen Impuls für Ihre Tagesstrategie: einen Gedanken aus einem rund 3.000 Jahre alten Buch der Wandlungen, übersetzt in die Sprache von heute. Auf seinem Gesicht ziehen die 64 Zeichen dieses Buches vorbei wie bei einem Glücksrad, bis eines stehen bleibt – das ist Ihr Zeichen für heute. Es schreibt Ihnen nichts vor. Es ist ein Anstoß, den eigenen Tag mit ruhigem, klarem Blick anzugehen.</li>
       <li><b>Nur eine Vorschau:</b> Das Modell zeigt Größe und Bewegung. Was ein echter Roboter bei Ihnen übernimmt, klären Sie mit dem Anbieter.</li>
     </ul>
   </div>
 
-  <div class="box" id="preise">
-    <h3 style="margin:0 0 2px">Was kostet die Miete?</h3>
+  <div class="box io" id="preise">
+    <h3 style="margin:0 0 2px"><b>iO Robotics</b> · Was kostet die Miete?</h3>
     <div class="price">
       <div><span class="k">Tagesmiete</span><div class="v"><small>ab</small> 99 € <small>/ Tag</small></div><p>Für Feiern, Messen oder einmalige Einsätze. Lieferung und Einweisung sind dabei.</p></div>
-      <div><span class="k">Wochenmiete</span><div class="v"><small>ab</small> 449 € <small>/ Woche</small></div><p>Für Projekte, Umzüge oder Hilfe auf Zeit.</p></div>
+      <div class="top"><span class="k">Wochenmiete</span><div class="v"><small>ab</small> 449 € <small>/ Woche</small></div><p>Für Projekte, Umzüge oder Hilfe auf Zeit.</p></div>
       <div><span class="k">Monatsmiete</span><div class="v"><small>ab</small> 1.499 € <small>/ Monat</small></div><p>Für dauerhafte Entlastung in Betrieb oder Haushalt. Flexibel kündbar.</p></div>
     </div>
     <p class="small">Alle Preise zuzüglich Mehrwertsteuer. Im Preis enthalten: Lieferung, Einrichtung, Einweisung und Abholung. Angaben von der Seite von iO Robotics, Stand 07.10.2026 – verbindlich ist das Angebot des Anbieters.</p>
@@ -167,21 +169,20 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   var $=function(i){return document.getElementById(i)}, mv=$('mv');
   // ---- Befehle: Schaltfläche, Animation im Modell, Antwort des Roboters ----
   var CMD=[
-    ['Geh','Gehen','Ich gehe drei Schritte nach vorn und komme an meinen Platz zurück.',/\b(geh|lauf|komm)/,'mutig'],
-    ['Dreh den Oberkörper','Drehen','Einmal nach links – und einmal nach rechts.',/dreh|oberk/,'froh'],
-    ['Schau dich um','Umsehen','Ein schönes Zimmer. Ich merke mir, wo alles steht.',/schau|umseh|sieh dich/,'schau'],
-    ['Heb auf','Aufheben','Ich gehe in die Knie und hebe das für Sie auf.',/\bheb|aufheb|knie/,'mutig'],
-    ['Orakel','Orakel','',/^orakel$/,'neutral']
+    ['Geh','Gehen','Ich steige vom Podest, gehe zwei Schritte, drehe um und stelle mich wieder hinauf.',/\b(geh|lauf|komm)/,'mutig'],
+    ['Dreh dich','Drehen','Einmal nach links – und einmal nach rechts.',/dreh|oberk/,'froh'],
+    ['Schau um','Umsehen','Ein schönes Zimmer. Ich merke mir, wo alles steht.',/schau|umseh|sieh dich/,'schau'],
+    ['LI|Lebensimpuls','Orakel','',/orakel|impuls/,'neutral']
   ];
   var HEX={"1":["Kiën · Das Schöpferische (乾)","Reine, ungebremste Schaffenskraft — hier ist wirklich etwas möglich. Der Erfolg hängt aber nicht vom Glück ab, sondern davon, ob du wirklich dranbleibst und dich an das hältst, was richtig ist."],"2":["Kun · Das Empfangende (坤)","Nicht jede Stärke zeigt sich im Vorangehen. Hier liegt der Erfolg darin, sich einzufügen, zu tragen und zu folgen, statt zu drängen — wer das versucht, verliert seinen Weg; wer sich führen lässt, findet ihn."],"3":["Dschun · Die Anfangsschwierigkeit (屯)","Ein schwieriger, chaotischer Anfang trägt bereits die Anlage zum Gelingen in sich — aber nicht durch Alleingang. Hol dir jetzt Unterstützung, statt vorschnell zu handeln."],"4":["Mong · Die Jugendtorheit (蒙)","Unerfahrenheit ist keine Schande — aber du musst selbst aktiv werden und dir Rat holen, statt zu erwarten, dass man dich belehrt. Und wenn du die Antwort hast: nimm sie an, statt sie ständig zu hinterfragen."],"5":["Sü · Das Warten (die Ernährung) (需)","Warten ist hier kein Nichtstun, sondern aktive innere Stärke — du weißt, wohin du willst, und lässt dich von der Verzögerung nicht aus der Ruhe bringen. Genau diese Gelassenheit trägt dich am Ende durch die Gefahr."],"6":["Sung · Der Streit (訟)","Auch wenn du im Recht bist: Ein Streit, den du bis zum bitteren Ende durchziehst, kostet dich am Ende mehr, als er bringt. Sei bereit, auf halbem Weg einzulenken — das ist keine Niederlage, sondern die klügere Lösung."],"7":["Schï · Das Heer (師)","Eine große, geballte Kraft — sei es ein Team, ein Projekt, eine Bewegung — funktioniert nur mit einem vertrauenswürdigen Kopf an der Spitze und einem wirklich klaren, berechtigten Grund. Fehlt beides, richtet die Kraft nur Schaden an."],"8":["Bi · Das Zusammenhalten (比)","Bevor du zum Mittelpunkt einer Gemeinschaft wirst — oder dich einer anschließt — prüf ehrlich, ob du selbst die nötige Substanz dafür hast. Ein echter Sammlungspunkt zieht die Richtigen von selbst an; wer zu lange zögert, verpasst den Anschluss."],"9":["Siau Tschu · Des Kleinen Zähmungskraft (小畜)","Die Zeit für den großen Durchbruch ist noch nicht da — aber im Kleinen bewegt sich schon etwas. Bleib innerlich fest entschlossen, während du nach außen sanft und geduldig bleibst."],"10":["Lü · Das Auftreten (履)","Auch eine eigentlich riskante Nähe zu einer starken oder schwierigen Person bleibt ungefährlich, wenn du dich mit echtem Takt und ohne Anmaßung verhältst."],"11":["Tai · Der Friede (泰)","Eine Zeit echter Verbindung zwischen oben und unten, innen und außen — nichts blockiert sich mehr gegenseitig. Genau jetzt ist Wachstum und Aufbau möglich, weil die Grundlage stimmt."],"12":["Pi · Die Stockung (否)","Eine Zeit, in der die Verbindung zwischen oben und unten fehlt und die falschen Kräfte den Ton angeben — öffentliches Engagement bringt hier nichts. Bewahr deine Grundsätze, statt dich an eine falsche Grundlage anzupassen."],"13":["Tung Jen · Gemeinschaft mit Menschen (同人)","Echte, tragfähige Gemeinschaft entsteht nur aus einem wirklich gemeinsamen Ziel — nicht aus Eigeninteresse. Eine solche Gemeinschaft trägt dich auch durch schwierige, riskante Vorhaben."],"14":["Da Yu · Der Besitz von Großem (大有)","Große Fülle und Macht lassen sich nur durch echte, uneigennützige Bescheidenheit wirklich halten — nicht durch Kontrolle oder Härte."],"15":["Kiën · Die Bescheidenheit (謙)","Bescheidenheit ist kein Nachteil, sondern der zuverlässigste Weg zu echtem, dauerhaftem Erfolg — egal ob du gerade oben oder unten stehst."],"16":["Yü · Die Begeisterung (豫)","Echte Begeisterung entsteht nicht, indem du anderen etwas aufzwingst, sondern indem du triffst, was in ihnen ohnehin schon angelegt ist. Auf dieser Grundlage lassen sich auch große gemeinsame Vorhaben erfolgreich mobilisieren."],"17":["Sui · Die Nachfolge (隨)","Wer wirklich andere für sich gewinnen will, muss selbst erst lernen, sich anzupassen und zu dienen — erzwungene Gefolgschaft hält nie, echte Zustimmung schon."],"18":["Gu · Die Arbeit am Verdorbenen (蠱)","Verdorbenes, das durch Nachlässigkeit entstanden ist, lässt sich durch entschlossenes Handeln wieder in Ordnung bringen. Dafür braucht es aber gründliches Nachdenken vorher (die Ursachen wirklich verstehen) und Sorgfalt danach (den Rückfall vermeiden)."],"19":["Lin · Die Annäherung (臨)","Eine Zeit des Aufschwungs und der Annäherung zwischen Menschen unterschiedlichen Rangs — nutze sie entschlossen, aber vergiss nicht, dass jede Aufschwungphase endlich ist. Wer den kommenden Wandel rechtzeitig mitdenkt, bleibt ihm überlegen."],"20":["Guan · Die Betrachtung (der Anblick) (觀)","Der Moment höchster innerer Sammlung — bevor du überhaupt etwas tust — hat oft die stärkste, unwillkürliche Wirkung auf andere. Echtes Vorbild entsteht aus innerem Ernst, nicht aus äußerer Inszenierung."],"21":["Schï Ho · Das Durchbeißen (噬嗑)","Ein Hindernis, das eine eigentlich naheliegende Verbindung blockiert, verschwindet nicht von allein — es braucht entschlossenes Durchgreifen, um es zu beseitigen. Aber Härte allein reicht nicht, es braucht auch Fairness."],"22":["Bi · Die Anmut (賁)","Äußere Form, Schönheit und Stil können wirklich etwas bewirken — aber sie sind nie das Eigentliche. Setz sie sparsam und für kleinere Dinge ein, nicht als Ersatz für Substanz bei wichtigen Entscheidungen."],"23":["Bo · Die Zersplitterung (剝)","In einer Zeit, in der destruktive oder zersetzende Kräfte im Aufwind sind, ist aktives Handeln aussichtslos. Sich zu fügen und abzuwarten ist hier keine Schwäche, sondern die klügere Reaktion."],"24":["Fu · Die Wiederkehr (die Wendezeit) (復)","Nach einem Tiefpunkt kommt die Wende von selbst zurück, wenn du sie nicht erzwingst, sondern ihr ihren natürlichen Lauf lässt. Das ist keine Frage von Kraftakten, sondern von Geduld und dem richtigen Timing."],"25":["Wu Wang · Die Unschuld (das Unerwartete) (无妄)","Wenn du wirklich zu deinem echten, unverstellten Wesen zurückfindest, handelst du ohne Hintergedanken das Richtige — und genau das führt zu echtem Erfolg. Aber Vorsicht: Nicht jeder Impuls ist automatisch richtig, nur der, der wirklich mit deinem besten Selbst übereinstimmt."],"26":["Da Tschu · Des Großen Zähmungskraft (大畜)","Große Energie, die bewusst gezähmt und diszipliniert wird, statt sich ungebremst zu entladen, führt zu echter, täglicher Weiterentwicklung. Diese Kraft ist stark genug, um dich auch in die Öffentlichkeit und in wirklich schwierige Aufgaben zu tragen."],"27":["I · Die Mundwinkel (die Ernährung) (頤)","Woran und wie du dich \"nährst\" — mit Nahrung, aber auch mit Gedanken, Beziehungen, Zeit — verrät sehr viel über deinen Charakter. Achte bewusst darauf, was du dir und anderen wirklich zuführst."],"28":["Da Go · Des Großen Übergewicht (大過)","Eine Situation, in der die Belastung eindeutig zu groß für die tragenden Kräfte ist — wie ein Balken, der sich durchbiegt. Das lässt sich nicht mit roher Gewalt lösen, sondern nur, indem du wirklich verstehst, worum es geht, und dann entschlossen, aber klug handelst."],"29":["Kan · Das Abgründige, das Wasser (坎)","Manche Schwierigkeiten kommen nicht einmal, sondern wiederholt — die Aufgabe ist dann nicht, sie zu vermeiden, sondern sich daran zu gewöhnen und dabei sich selbst treu zu bleiben. Wie Wasser: jede Vertiefung ausfüllen, weiterfließen, nie die eigene Art verlieren."],"30":["Li · Das Haftende, das Feuer (離)","Nichts Helles oder Klares existiert für sich allein — es braucht etwas, woran es sich festmacht, um nicht einfach zu verglühen. Bewusste, freiwillige Bindung an das Richtige ist der Schlüssel zu dauerhafter Klarheit."],"31":["Hiën · Die Einwirkung (die Werbung) (咸)","Echte gegenseitige Anziehung entsteht, wenn der Stärkere sich demütig dem Schwächeren zuwendet, statt Unterordnung zu verlangen — und wenn innere Ruhe die äußere Begeisterung im richtigen Maß hält."],"32":["Hong · Die Dauer (恒)","Dauer ist keine Ruhe, sondern eine Bewegung, die sich ständig erneuert — wie Ein- und Ausatmen. Was wirklich Bestand hat, entsteht nicht durch Stillstand, sondern durch einen verlässlichen, sich wiederholenden Rhythmus mit einem festen Anker in der Mitte."],"33":["Dun · Der Rückzug (遯)","Wenn die Umstände klar gegen dich laufen, ist rechtzeitiger, würdevoller Rückzug keine Niederlage, sondern echte Stärke — der entscheidende Unterschied zu Flucht ist, dass du dabei noch die Kontrolle hast."],"34":["Da Dschuang · Des Großen Macht (大壯)","Große Kraft und Erfolg bringen die Versuchung mit sich, sich nur noch auf die eigene Stärke zu verlassen — echte Größe zeigt sich aber darin, diese Kraft weiter an das Richtige zu binden, statt sie einfach auszuspielen."],"35":["Dsin · Der Fortschritt (晉)","Echter Aufstieg funktioniert am besten, wenn jemand aus einer eigentlich abhängigen Position heraus so viel innere Klarheit und Integrität zeigt, dass andere ihm freiwillig folgen — nicht durch Anmaßung, sondern durch verdiente Anerkennung."],"36":["Ming I · Die Verfinsterung des Lichts (明夷)","In einer Zeit, in der ehrliches, klares Handeln bestraft statt belohnt wird, ist es klug, dein Licht nach außen zu verbergen — aber innerlich fest an deinen Werten festzuhalten, statt sie aufzugeben."],"37":["Gia Jen · Die Sippe (家人)","Ordnung im engsten Kreis — der Familie, dem Zuhause — ist die Grundlage für Ordnung überall sonst. Wenn jeder wirklich zu seiner Rolle steht, funktioniert das Ganze."],"38":["Kui · Der Gegensatz (睽)","Wenn du gerade mit jemandem auf einer ganz anderen Wellenlänge bist, erzwing keine großen gemeinsamen Schritte — kleine, geduldige Annäherungen sind jetzt das Einzige, was funktioniert."],"39":["Giën · Das Hemmnis (蹇)","Wenn du gerade auf ein echtes Hindernis triffst, ist Rückzug keine Kapitulation — nutz die Zeit, um dir Unterstützung und einen klaren Kopf zu holen, statt blind weiterzudrängen."],"40":["Hië · Die Befreiung (解)","Wenn sich eine schwierige Situation endlich löst, genieß die Erleichterung, aber übertreib den Triumph nicht — kehr zügig zur Normalität zurück und erledige liegen gebliebene Reste rasch, statt sie hinauszuzögern."],"41":["Sun · Die Minderung (損)","Weniger zu haben oder zu geben ist nicht automatisch schlecht — wenn es aus echter Aufrichtigkeit geschieht, kann bewusster Verzicht sogar Kraft und Klarheit bringen."],"42":["I · Die Mehrung (益)","Wahre Mehrung entsteht, wenn die Oberen bereit sind, zu verzichten, damit die Unteren gewinnen. Wo diese Bereitschaft echt ist, entsteht Vertrauen — und mit diesem Vertrauen gelingt auch Schwieriges. Das ist eine gute Zeit, um etwas anzupacken."],"43":["Guai · Der Durchbruch (die Entschlossenheit) (夬)","Wenn du einem letzten, hartnäckigen Missstand entschlossen entgegentrittst, mach es offen und öffentlich, nicht mit Gewalt oder Tricks — und fang dabei zuerst bei dir selbst an."],"44":["Gou · Das Entgegenkommen (姤)","Ein kleiner, scheinbar harmloser negativer Einfluss kann sich unbemerkt einschleichen und mächtig werden, wenn du ihn nicht gleich am Anfang ernst nimmst."],"45":["Tsui · Die Sammlung (das Versammeln) (萃)","Menschen sammeln sich um einen echten Mittelpunkt — aber dieser Mittelpunkt muss zuerst selbst innerlich gesammelt und integer sein, sonst funktioniert es nicht."],"46":["Schong · Das Empordringen (升)","Ein echter, verdienter Aufstieg braucht keine Gewalt, nur Geduld und den Mut, aktiv auf die richtigen Menschen zuzugehen — die Bedingungen stehen gerade gut für dich."],"47":["Kun · Die Bedrängnis (die Erschöpfung) (困)","Eine Zeit, in der nichts nach außen funktioniert und Worte kein Gehör finden — das ist unangenehm, aber keine Sackgasse. Wer innerlich stark bleibt, statt sich brechen zu lassen, baut in genau dieser Not die Kraft auf, die später trägt."],"48":["Dsing · Der Brunnen (井)","Manche Dinge bleiben gleich, egal wie sehr sich alles andere um dich herum verändert — deine eigenen Grundbedürfnisse und die innere Quelle, aus der du schöpfst. Der Fehler liegt nicht im Fehlen der Quelle, sondern darin, sie kurz vor dem Ziel durch Nachlässigkeit doch noch zu verpassen."],"49":["Go · Die Umwälzung (die Mauserung) (革)","Ein echter Umbruch — in einer Beziehung, einem Projekt, deinem Leben — ist legitim, wenn der Moment wirklich reif ist, du das Vertrauen der Betroffenen hast, deine Motive echt sind und die Änderung einem wirklichen Bedürfnis entspricht. Ohne diese vier Bedingungen wird aus Umwälzung nur Chaos."],"50":["Ding · Der Tiegel (鼎)","Nach dem notwendigen Umbruch geht es jetzt darum, etwas Neues, Kultiviertes aufzubauen — Substanz, die sich veredelt, statt nur bestehen zu bleiben."],"51":["Dschen · Das Erregende (das Erschüttern, der Donner) (震)","Ein plötzlicher Schreck oder eine Erschütterung ist unangenehm, aber sie hat einen Sinn: Wer gelernt hat, mit Furcht umzugehen, statt sie zu verdrängen, bleibt auch bei echtem Schrecken gefasst genug, um weiterzumachen, was ihm wichtig ist."],"52":["Gen · Das Stillehalten, der Berg (艮)","Echte Ruhe bedeutet nicht, alles um dich herum auszublenden — sie bedeutet, das eigene unruhige Ich für einen Moment zum Schweigen zu bringen, um wirklich klar zu sehen."],"53":["Dsiën · Die Entwicklung (allmählicher Fortschritt) (漸)","Manche Dinge brauchen ihre Zeit und ihre Schritte — wer versucht, sie zu überstürzen, verdirbt sie. Echter, dauerhafter Einfluss entsteht durch geduldigen Aufbau der eigenen Persönlichkeit, nicht durch schnelle Tricks."],"54":["Gui Me · Das heiratende Mädchen (歸妹)","Eine Verbindung oder Situation, die ohne die übliche, sorgfältige Vorbereitung entstanden ist, braucht besondere Vorsicht und Zurückhaltung — überstürztes Handeln macht es hier nur schlimmer."],"55":["Fong · Die Fülle (豐)","Ein seltener Höhepunkt echter Größe und Fülle ist erreichbar — aber nur, wenn du dich nicht schon jetzt vom kommenden Abklingen lähmen lässt. Sei wie die Mittagssonne: voll da, ohne Angst vor dem, was danach kommt."],"56":["Lü · Der Wanderer (旅)","Wenn du in einer fremden, unsicheren Umgebung bist — ohne den Rückhalt, den du sonst hast —, ist Bescheidenheit kein Nachteil, sondern deine wichtigste Schutzstrategie. Kleine, vorsichtige Schritte statt großer Gesten."],"57":["Sun · Das Sanfte (der Wind) (巽)","Wirkung, die von Dauer ist, entsteht nicht durch einen einzigen großen Schlag, sondern durch stetiges, geduldiges Einwirken in dieselbe Richtung — wie der Wind, der nicht mit einem Stoß, sondern durch anhaltendes Wehen etwas bewegt."],"58":["Dui · Das Heitere, der See (兌)","Echte Freude ist ansteckend und trägt weit — aber nur, wenn sie auf innerer Festigkeit beruht, nicht auf reiner Ausgelassenheit. Stark im Kern, mild nach außen."],"59":["Huan · Die Auflösung (渙)","Wenn Menschen sich voneinander entfremdet haben — durch Missverständnis, Egoismus oder Isolation —, braucht es etwas Gemeinsames, Größeres, um diese Trennung wieder aufzulösen. Ein gemeinsames Ziel oder ein verbindendes Erlebnis kann das leisten."],"60":["Dsië · Die Beschränkung (節)","Grenzen und Sparsamkeit sind sinnvoll und machen dich stark — aber nur, solange sie maßvoll bleiben. Übertriebene, harte Beschränkung schadet am Ende mehr, als sie nützt."],"61":["Dschung Fu · Innere Wahrheit (中孚)","Echte, innere Wahrhaftigkeit erreicht selbst die verschlossensten Menschen — nicht durch Nähe oder gemeinsame Interessen (die zerbrechen, sobald sich die Interessen trennen), sondern weil sie auf etwas Beständigem beruht. Ein offenes, unvoreingenommenes Herz mit einem festen, tragfähigen Kern kann auch die schwierigsten Dinge angehen."],"62":["Siau Go · Des Kleinen Übergewicht (小過)","In Ausnahmezeiten, in denen die eigentlich tragenden Kräfte gerade nicht zur Verfügung stehen, gewinnst du nicht durch große Gesten, sondern durch bewusst kleine, gewissenhafte Schritte. Bleib unten statt nach oben zu streben — das bringt Erfolg, auch wenn es unspektakulär aussieht."],"63":["Gi Dsi · Nach der Vollendung (既濟)","Wenn alles perfekt geordnet erscheint, ist genau das die gefährlichste Phase — nicht weil etwas fehlt, sondern weil die Versuchung entsteht, jetzt nachzulassen. Genau diese Nachlässigkeit ist der Anfang vom Verfall."],"64":["We Dsi · Vor der Vollendung (未濟)","Auch eine schwierige, noch unfertige Situation trägt echte Erfolgsaussicht in sich — aber nur, wenn du bis zum Schluss vorsichtig bleibst. Gerade kurz vor dem Ziel nachlässig zu werden, kann alles zunichtemachen."]};
   // Zeichen-Nummer aus unterem und oberem Dreierzeichen (Linien von unten, 1 = durchgezogen)
   var TRI=['111','100','010','001','000','011','101','110'];
   var KW=[[1,34,5,26,11,9,14,43],[25,51,3,27,24,42,21,17],[6,40,29,4,7,59,64,47],[33,62,39,52,15,53,56,31],[12,16,8,23,2,20,35,45],[44,32,48,18,46,57,50,28],[13,55,63,22,36,37,30,49],[10,54,60,41,19,61,38,58]];
-  var IDLE='Bereit. Geben Sie mir einen Befehl oder stellen Sie eine Frage.';
+  var IDLE='Bereit. Geben Sie mir einen Befehl.';
   function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function say(t,quiet){ document.querySelectorAll('[data-say]').forEach(function(p){ p.innerHTML='<b>Roboter:</b> '+esc(t); }); if(!quiet) speak(t); }
   function chat(who,t){ document.querySelectorAll('[data-chat]').forEach(function(c){ var p=document.createElement('p'); p.className=who; p.textContent=t; c.appendChild(p); c.scrollTop=c.scrollHeight; }); }
-  function panel(mode){ $('arCmd').hidden=mode!=='cmd'; $('arChat').hidden=mode!=='chat'; $('arBack').hidden=mode!=='chat'; $('arT').textContent=mode==='chat'?'Orakel':'Befehle'; }
+  function panel(mode){ $('arCmd').hidden=mode!=='cmd'; $('arChat').hidden=mode!=='chat'; $('arBack').hidden=mode!=='chat'; $('arT').textContent=mode==='chat'?'LI|Lebensimpuls':'Befehle'; }
   function mark(i){ document.querySelectorAll('[data-verbs] button').forEach(function(b){ b.classList.toggle('on',+b.dataset.i===i); }); }
   // ---- Stimme ----
   var sound=true;
@@ -246,21 +247,21 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   async function start(name,once){ mv.animationName=name; await mv.updateComplete; mv.currentTime=0; mv.play(once?{repetitions:1}:{}); }
   async function run(i){
     var c=CMD[i]; if(c[1]==='Orakel'){ ask(); return; }
-    mark(i); say(c[2]); clr(); setFace('eyes',{emo:c[4]});
+    mark(i); say(c[2]); clr(); setFace('eyes',{emo:c[4]}); $('askF').hidden=true; $('sayP').hidden=false;
     await start(c[1],true);
     back=setTimeout(idle,Math.max(1,mv.duration||3)*1000-120);
   }
-  function idle(){ clr(); mark(-1); say(IDLE,true); setFace('eyes',{emo:'neutral'}); start('Bereit',false); }
+  function idle(){ clr(); mark(-1); say(IDLE,true); $('sayP').hidden=true; setFace('eyes',{emo:'neutral'}); start('Bereit',false); }
   // Orakel-Knopf: Der Nutzer stellt seine Frage selbst – getippt oder gesprochen
   function ask(){
     clr(); mark(CMD.length-1); setFace('eyes',{emo:'hoer'}); start('Bereit',false);
-    say('Stellen Sie mir Ihre Frage – tippen Sie sie ein oder halten Sie das Mikrofon gedrückt und sprechen Sie. Das Orakel antwortet.',inAR);
-    if(inAR){ panel('chat'); } else { $('askI').placeholder='Ihre Frage an das Orakel …'; $('askI').focus(); }
+    say('Was bewegt Sie heute? Tippen Sie Ihre Frage ein oder halten Sie das Mikrofon gedrückt und sprechen Sie – ich gebe Ihnen einen Lebensimpuls für Ihren Tag.',inAR);
+    if(inAR){ panel('chat'); } else { $('askF').hidden=false; $('sayP').hidden=false; $('askI').focus(); }
   }
   // ---- Frage: läuft über das Gesicht, das Orakel antwortet ----
   async function oracle(q){
     clr(); mark(CMD.length-1); q=q.trim(); if(!/[?!.]$/.test(q)) q+='?';
-    say('Ihre Frage: „'+q+'“ – das kann ich nicht wissen. Aber ich befrage für Sie das Orakel.'); setFace('text',{text:q});
+    say('Ihre Frage: „'+q+'“ – das kann ich nicht wissen. Aber ich habe einen Lebensimpuls für Sie.'); setFace('text',{text:q});
     var lines=[]; for(var i=0;i<6;i++){ lines.push(((Math.random()<.5?2:3)+(Math.random()<.5?2:3)+(Math.random()<.5?2:3))%2); }   // drei Münzen je Linie
     var nr=KW[TRI.indexOf(lines.slice(0,3).join(''))][TRI.indexOf(lines.slice(3).join(''))], h=HEX[nr];
     start('Bereit',false);
@@ -268,24 +269,11 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     while(at[at.length-1]<4300){ seq.push([0,0,0,0,0,0].map(function(){ return Math.random()<.5?1:0; })); at.push(at[at.length-1]+d); d*=1.13; }
     seq.push(lines);
     t2=setTimeout(function(){ setFace('spin',{seq:seq,at:at}); },3600);
-    t3=setTimeout(function(){ var a='Zeichen '+nr+' – '+h[0]+'. '+h[1]; say(a); chat('bot',a); },3600+at[at.length-1]+500);
+    t3=setTimeout(function(){ var a='Ihr Impuls für heute: '+h[0].replace(/^.*·\s*/,'').replace(/\s*\([^)]*\)\s*$/,'')+'. '+h[1]; say(a); chat('bot',a); },3600+at[at.length-1]+500);
     back=setTimeout(function(){ mark(-1); setFace('eyes',{emo:'froh'}); t2=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },2500); },3600+at[at.length-1]+20000);
-  }
-  // Beispielfragen: zeigen, dass der Roboter auch auf Persönliches eingehen kann
-  var EG=['Wie fühle ich mich heute?','Was tut mir heute gut?','Was braucht mein Herz gerade?','Worauf sollte ich heute achten?','Was darf ich heute loslassen?','Was kostet die Miete?'];
-  document.querySelectorAll('[data-eg]').forEach(function(box){
-    box.innerHTML='<span>Beispielfragen:</span>'+EG.slice(0,+box.dataset.eg).map(function(q,i){ return '<button type="button" data-q="'+i+'">'+q+'</button>'; }).join('');
-    box.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b){ e.stopPropagation(); handle(EG[+b.dataset.q]); } });
-  });
-  // Preisfrage: beantwortet der Roboter selbst (Werte von der Seite des Anbieters)
-  function price(){
-    clr(); mark(-1); setFace('text',{text:'ab 99 € / Tag  ·  ab 449 € / Woche  ·  ab 1.499 € / Monat'}); start('Bereit',false);
-    var pa='Mich können Sie mieten: ab 99 Euro am Tag, ab 449 Euro in der Woche oder ab 1.499 Euro im Monat – jeweils zuzüglich Mehrwertsteuer. Lieferung, Einrichtung, Einweisung und Abholung sind dabei.'; say(pa); chat('bot',pa);
-    back=setTimeout(function(){ setFace('eyes',{emo:'froh'}); t2=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },2500); },16000);
   }
   function handle(t){
     t=(t||'').trim(); if(!t) return; var low=t.toLowerCase();
-    if(/preis|kost|miet|teuer|euro/.test(low)){ chat('du',t); price(); return; }
     if(t.indexOf('?')<0 && t.split(/\s+/).length<=4){ for(var i=0;i<CMD.length;i++){ if(CMD[i][3].test(low)){ run(i); return; } } }
     chat('du',t); oracle(t);
   }
