@@ -1,5 +1,5 @@
 // Roboter zur Probe – Offline-Speicher für Seite, 3D-Modell und Bibliothek
-const CACHE = 'roboter-v13';
+const CACHE = 'roboter-v14';
 const CORE = ['./', './index.html', './roboter.glb', './manifest.webmanifest', './icon-192.png', './icon-512.png',
   'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js'];
 self.addEventListener('install', e => {
