@@ -100,6 +100,11 @@ model-viewer.locked[ar-status="session-started"] .arlock,model-viewer.locked[ar-
 .price p{margin:0;font-size:13.5px;color:#d5dde7;text-align:left;hyphens:manual}
 .box.io .small{font-size:13px;color:#8fa1b5;margin:0}
 .small{font-size:13px;color:var(--mute);margin:0}
+.guide summary{font-weight:700;font-size:18px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary::after{content:'+';font-size:22px;font-weight:400;color:var(--acc)}
+.guide[open] summary::after{content:'–'}
+.guide[open] summary{margin-bottom:6px}
 .who{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}.who img{border-radius:50%;flex:none}.who p{margin:0;text-align:left}.who a{color:var(--acc)}
 footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font-size:12.5px;color:var(--mute);text-align:justify;hyphens:auto}
 </style>
@@ -141,12 +146,23 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     <form class="ask" id="askF" hidden><input id="askI" type="text" maxlength="140" autocomplete="off" placeholder="z. B. Worauf sollte ich heute achten?" aria-label="Befehl oder Frage an den Roboter">
       <button type="button" class="sec" data-mic aria-label="Gedrückt halten und sprechen" title="Gedrückt halten und sprechen">🎤</button><button type="button" class="sec" id="snd" aria-label="Stimme an oder aus">🔊</button><button type="submit">Fragen</button></form>
   </div>
-  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet mit einem kurzen Satz. Mit „LI|Lebensimpuls“ öffnet sich die Fragezeile: Tippen Sie Ihre Frage ein oder halten Sie das Mikrofon gedrückt und sprechen Sie – sie läuft über sein Gesicht, und er gibt Ihnen einen Impuls für Ihren Tag. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf seinem Podest auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Die Befehlsleiste lässt sich mit dem ✕ schließen und über „Befehle“ wieder öffnen. Ein Tipp auf „LI|Lebensimpuls“ öffnet das Fragefeld: tippen oder das Mikrofon gedrückt halten und sprechen.</p>
+  <details class="box guide">
+    <summary>Bedienungsanleitung</summary>
+    <ul>
+      <li><b>Befehle:</b> Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet mit einem kurzen Satz. Solange er sich bewegt, sind die Knöpfe gesperrt.</li>
+      <li><b>LI|Lebensimpuls:</b> Der Knopf öffnet die Fragezeile. Tippen Sie Ihre Frage ein oder halten Sie das Mikrofon gedrückt und sprechen Sie – sie läuft über sein Gesicht, und er gibt Ihnen einen Impuls für Ihren Tag.</li>
+      <li><b>Ins Wohnzimmer stellen:</b> Der Roboter erscheint über die Handy-Kamera in Originalgröße (1,72 m) auf seinem Podest. Schaffen Sie etwas Platz und treten Sie zwei Schritte zurück.</li>
+      <li><b>Abstellen:</b> Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm. Dann steht er fest, und Sie können um ihn herumgehen.</li>
+      <li><b>Robotergröße ändern:</b> Nach dem Abstellen ändern Sie mit zwei Fingern nur noch seine Größe. Oben wechseln Sie zwischen Originalgröße und Tisch-Modell.</li>
+      <li><b>Umstellen:</b> Ein Tipp auf den Roboter selbst oder auf „Umstellen“ nimmt ihn wieder auf.</li>
+      <li><b>Befehlsleiste:</b> Das ✕ schließt sie, der Knopf „Befehle“ unten rechts öffnet sie wieder. Im Lebensimpuls-Chat führt das gelbe „‹ Befehle“ zurück zu allen Befehlen.</li>
+    </ul>
+  </details>
 
   <div class="box">
     <h3 style="margin:0 0 6px">Was Sie hier sehen</h3>
     <ul>
-      <li><b>Größe:</b> 1,72 m – so groß wie ein erwachsener Mensch. In der Handy-Ansicht steht er maßstabsgetreu im Raum.</li>
+      <li><b>Robotergröße:</b> 1,72 m – so groß wie ein erwachsener Mensch. In der Handy-Ansicht steht er maßstabsgetreu im Raum.</li>
       <li><b>Befehle:</b> gehen (vom Podest steigen, zwei Schritte, umdrehen und wieder hinauf), den Oberkörper drehen, sich umsehen – und LI|Lebensimpuls.</li>
       <li><b>Digitales Gesicht:</b> Das Visier ist ein Bildschirm. Dort zeigt er Stimmungen – er lacht, schaut entschlossen, hört aufmerksam zu oder schaut betrübt – und dort läuft Ihre Frage ab.</li>
       <li><b>LI|Lebensimpuls:</b> Stellen Sie eine Frage, die Sie heute bewegt – etwa „Worauf sollte ich heute achten?“. Der Roboter gibt Ihnen dazu einen Impuls für Ihre Tagesstrategie: einen Gedanken aus einem rund 3.000 Jahre alten Buch der Wandlungen, übersetzt in die Sprache von heute. Auf seinem Gesicht ziehen die 64 Zeichen dieses Buches vorbei wie bei einem Glücksrad, bis eines stehen bleibt – das ist Ihr Zeichen für heute. Es schreibt Ihnen nichts vor. Es ist ein Anstoß, den eigenen Tag mit ruhigem, klarem Blick anzugehen.</li>
