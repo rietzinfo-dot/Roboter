@@ -43,7 +43,6 @@ model-viewer[ar-status="session-started"] .arui,model-viewer[ar-status="object-p
 model-viewer[ar-status="session-started"] .arbtn,model-viewer[ar-status="object-placed"] .arbtn{display:none}
 .arlock{display:none;position:absolute;inset:0;touch-action:none}
 model-viewer.locked[ar-status="session-started"] .arlock,model-viewer.locked[ar-status="object-placed"] .arlock{display:block}
-model-viewer.noui .arui.bot{display:none!important}
 .arsize{flex-wrap:wrap;justify-content:center}.arsize i{width:1px;height:20px;background:#5b6268}
 .arhint{display:block;margin:8px auto 0;max-width:330px;background:rgba(16,20,24,.78);color:#faf8f4;border-radius:10px;padding:7px 12px;font:500 13px 'IBM Plex Sans',sans-serif;pointer-events:none}
 .arhint:empty{display:none}
@@ -71,6 +70,17 @@ model-viewer.noui .arui.bot{display:none!important}
 .eg span{font:500 12px 'IBM Plex Mono',monospace;color:#6f8597;width:100%}
 .eg button{font:500 13px 'IBM Plex Sans',sans-serif;background:transparent;color:#9fd3ff;border:1px solid #2d3b47;border-radius:999px;padding:7px 12px;cursor:pointer}
 .eg button:hover{background:#1c242b;border-color:var(--acc)}
+.arsize{margin-right:44px}.arsize button{font-size:12.5px!important;padding:8px 10px!important}
+.phead{display:flex;justify-content:space-between;align-items:center;margin:-4px 0 8px;font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#6f8597}
+.phead button{background:transparent;border:0;color:#9fd3ff;font:600 13px 'IBM Plex Sans',sans-serif;padding:6px 4px;cursor:pointer}
+.arpill{position:absolute;right:10px;bottom:0;background:rgba(16,20,24,.86);color:#9fd3ff;border:1px solid #2d3b47;border-radius:999px;padding:9px 14px;font:600 13px 'IBM Plex Sans',sans-serif}
+.arui [hidden]{display:none!important}
+.chat{max-height:26vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.chat:empty::before{content:'Stellen Sie Ihre Frage – tippen oder Mikrofon gedrückt halten und sprechen.';font:500 13px 'IBM Plex Sans',sans-serif;color:#8fa3b3}
+.chat p{margin:0;padding:8px 11px;border-radius:12px;font:400 13.5px/1.4 'IBM Plex Sans',sans-serif;max-width:88%}
+.chat .du{align-self:flex-end;background:var(--acc);color:#fff;border-bottom-right-radius:3px}
+.chat .bot{align-self:flex-start;background:#1c242b;color:#e9e4dc;border-bottom-left-radius:3px;text-align:justify;hyphens:auto}
+[data-mic]{touch-action:none;user-select:none;-webkit-user-select:none}
 .arui .eg span{display:none}.arui .eg{margin-top:8px}.arui .eg button{font-size:12px;padding:6px 10px}
 .hint{font-size:13px;color:var(--mute);margin:8px 2px 0;text-align:justify;hyphens:auto}
 .box{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;margin:18px 0}
@@ -104,17 +114,27 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     <model-viewer id="mv" src="roboter.glb" alt="3D-Modell eines humanoiden Roboters, der Befehle ausführt" ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" camera-controls touch-action="pan-y" autoplay animation-name="Bereit" animation-crossfade-duration="350" shadow-intensity="1" exposure="1.1" camera-orbit="24deg 80deg 4.9m" min-camera-orbit="auto auto 2.5m" max-camera-orbit="auto auto 9m" camera-target="0m 0.9m 0.7m" environment-image="neutral">
       <button slot="ar-button" class="arbtn" id="arb">📱 Ins Wohnzimmer stellen</button>
       <div class="arlock" id="arlock"></div>
-      <div class="arui top"><span class="arsize"><button type="button" id="btO" class="on">Originalgröße</button><button type="button" id="btT">Tisch-Modell</button><i></i><button type="button" id="btL">📌 Abstellen</button><button type="button" id="btU" class="on">💬 Befehle</button></span><span class="arhint" id="arhint"></span></div>
-      <div class="arui bot"><div class="adv"><p class="say" data-say></p><div class="verbs" data-verbs></div>
-        <div class="ask"><button type="button" class="sec" data-mic style="flex:1">🎤 Frage sprechen</button></div><div class="eg" data-eg="2"></div></div></div>
+      <div class="arui top"><span class="arsize"><button type="button" id="btO" class="on">Originalgröße</button><button type="button" id="btT">Tisch-Modell</button><button type="button" id="btL">📌 Abstellen</button></span><span class="arhint" id="arhint"></span></div>
+      <div class="arui bot">
+        <div class="adv" id="arP">
+          <div class="phead"><span id="arT">Befehle</span><span><button type="button" id="arBack" hidden>‹ Befehle</button><button type="button" id="arMin" aria-label="Leiste einklappen">▾ einklappen</button></span></div>
+          <div id="arCmd"><div class="verbs" data-verbs></div></div>
+          <div id="arChat" hidden>
+            <div class="chat" data-chat></div>
+            <div class="eg" data-eg="2"></div>
+            <form class="ask" id="arF"><input id="arI" type="text" maxlength="140" autocomplete="off" placeholder="Frage ans Orakel …" aria-label="Frage ans Orakel"><button type="button" class="sec" data-mic aria-label="Gedrückt halten und sprechen">🎤</button><button type="submit" aria-label="Senden">➤</button></form>
+          </div>
+        </div>
+        <button type="button" class="arpill" id="arOpen" hidden>▴ Befehle</button>
+      </div>
     </model-viewer>
   </div>
   <div class="adv"><p class="say" data-say></p><div class="verbs" data-verbs></div>
     <form class="ask" id="askF"><input id="askI" type="text" maxlength="140" autocomplete="off" placeholder="Frage oder Befehl eintippen …" aria-label="Befehl oder Frage an den Roboter">
-      <button type="button" class="sec" data-mic aria-label="Frage sprechen">🎤</button><button type="button" class="sec" id="snd" aria-label="Stimme an oder aus">🔊</button><button type="submit">Fragen</button></form>
+      <button type="button" class="sec" data-mic aria-label="Gedrückt halten und sprechen" title="Gedrückt halten und sprechen">🎤</button><button type="button" class="sec" id="snd" aria-label="Stimme an oder aus">🔊</button><button type="submit">Fragen</button></form>
     <div class="eg" data-eg="6"></div>
   </div>
-  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet. Oder stellen Sie ihm eine Frage, getippt oder gesprochen: Sie läuft über sein Gesicht, und das Orakel antwortet. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Mit „Befehle“ blenden Sie die Befehlsleiste aus und wieder ein.</p>
+  <p class="hint">So geht es: Tippen Sie einen Befehl an – der Roboter führt ihn aus und antwortet. Oder stellen Sie ihm eine Frage, getippt oder gesprochen: Sie läuft über sein Gesicht, und das Orakel antwortet. Mit „Ins Wohnzimmer stellen“ erscheint er über die Handy-Kamera in Originalgröße (1,72 m) auf Ihrem Fußboden; die Befehle funktionieren dort genauso. Dafür etwas Platz schaffen und zwei Schritte zurücktreten. Ziehen Sie ihn an seinen Platz – auf den Boden oder auf einen Tisch – und tippen Sie einmal auf den Bildschirm: Dann steht er fest, und Sie können um ihn herumgehen. Mit zwei Fingern ändern Sie danach nur noch seine Größe. Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf. Die Befehlsleiste lässt sich einklappen. Ein Tipp auf „Orakel“ öffnet das Fragefeld: tippen oder das Mikrofon gedrückt halten und sprechen.</p>
 
   <div class="box">
     <h3 style="margin:0 0 6px">Was Sie hier sehen</h3>
@@ -160,6 +180,8 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   var IDLE='Bereit. Geben Sie mir einen Befehl oder stellen Sie eine Frage.';
   function esc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function say(t,quiet){ document.querySelectorAll('[data-say]').forEach(function(p){ p.innerHTML='<b>Roboter:</b> '+esc(t); }); if(!quiet) speak(t); }
+  function chat(who,t){ document.querySelectorAll('[data-chat]').forEach(function(c){ var p=document.createElement('p'); p.className=who; p.textContent=t; c.appendChild(p); c.scrollTop=c.scrollHeight; }); }
+  function panel(mode){ $('arCmd').hidden=mode!=='cmd'; $('arChat').hidden=mode!=='chat'; $('arBack').hidden=mode!=='chat'; $('arT').textContent=mode==='chat'?'Orakel':'Befehle'; }
   function mark(i){ document.querySelectorAll('[data-verbs] button').forEach(function(b){ b.classList.toggle('on',+b.dataset.i===i); }); }
   // ---- Stimme ----
   var sound=true;
@@ -232,9 +254,8 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   // Orakel-Knopf: Der Nutzer stellt seine Frage selbst – getippt oder gesprochen
   function ask(){
     clr(); mark(CMD.length-1); setFace('eyes',{emo:'hoer'}); start('Bereit',false);
-    var ar=/session-started|object-placed/.test(mv.getAttribute('ar-status')||'');
-    say(ar?'Tippen Sie auf „Frage sprechen“ und stellen Sie Ihre Frage.':'Stellen Sie mir Ihre Frage – tippen Sie sie ein oder sprechen Sie sie. Das Orakel antwortet.');
-    if(!ar){ $('askI').placeholder='Ihre Frage an das Orakel …'; $('askI').focus(); }
+    say('Stellen Sie mir Ihre Frage – tippen Sie sie ein oder halten Sie das Mikrofon gedrückt und sprechen Sie. Das Orakel antwortet.',inAR);
+    if(inAR){ panel('chat'); } else { $('askI').placeholder='Ihre Frage an das Orakel …'; $('askI').focus(); }
   }
   // ---- Frage: läuft über das Gesicht, das Orakel antwortet ----
   async function oracle(q){
@@ -247,7 +268,7 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     while(at[at.length-1]<4300){ seq.push([0,0,0,0,0,0].map(function(){ return Math.random()<.5?1:0; })); at.push(at[at.length-1]+d); d*=1.13; }
     seq.push(lines);
     t2=setTimeout(function(){ setFace('spin',{seq:seq,at:at}); },3600);
-    t3=setTimeout(function(){ say('Zeichen '+nr+' – '+h[0]+'. '+h[1]); },3600+at[at.length-1]+500);
+    t3=setTimeout(function(){ var a='Zeichen '+nr+' – '+h[0]+'. '+h[1]; say(a); chat('bot',a); },3600+at[at.length-1]+500);
     back=setTimeout(function(){ mark(-1); setFace('eyes',{emo:'froh'}); t2=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },2500); },3600+at[at.length-1]+20000);
   }
   // Beispielfragen: zeigen, dass der Roboter auch auf Persönliches eingehen kann
@@ -259,35 +280,47 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   // Preisfrage: beantwortet der Roboter selbst (Werte von der Seite des Anbieters)
   function price(){
     clr(); mark(-1); setFace('text',{text:'ab 99 € / Tag  ·  ab 449 € / Woche  ·  ab 1.499 € / Monat'}); start('Bereit',false);
-    say('Mich können Sie mieten: ab 99 Euro am Tag, ab 449 Euro in der Woche oder ab 1.499 Euro im Monat – jeweils zuzüglich Mehrwertsteuer. Lieferung, Einrichtung, Einweisung und Abholung sind dabei.');
+    var pa='Mich können Sie mieten: ab 99 Euro am Tag, ab 449 Euro in der Woche oder ab 1.499 Euro im Monat – jeweils zuzüglich Mehrwertsteuer. Lieferung, Einrichtung, Einweisung und Abholung sind dabei.'; say(pa); chat('bot',pa);
     back=setTimeout(function(){ setFace('eyes',{emo:'froh'}); t2=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },2500); },16000);
   }
   function handle(t){
     t=(t||'').trim(); if(!t) return; var low=t.toLowerCase();
-    if(/preis|kost|miet|teuer|euro/.test(low)){ price(); return; }
+    if(/preis|kost|miet|teuer|euro/.test(low)){ chat('du',t); price(); return; }
     if(t.indexOf('?')<0 && t.split(/\s+/).length<=4){ for(var i=0;i<CMD.length;i++){ if(CMD[i][3].test(low)){ run(i); return; } } }
-    oracle(t);
+    chat('du',t); oracle(t);
   }
   document.querySelectorAll('[data-verbs]').forEach(function(box){
     box.innerHTML=CMD.map(function(c,i){ return '<button type="button" data-i="'+i+'">'+c[0]+'</button>'; }).join('');
     box.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b){ e.stopPropagation(); run(+b.dataset.i); } });
   });
+  $('arF').addEventListener('submit',function(e){ e.preventDefault(); e.stopPropagation(); var v=$('arI').value; $('arI').value=''; $('arI').blur(); handle(v); });
+  $('arBack').addEventListener('click',function(e){ e.stopPropagation(); panel('cmd'); });
+  $('arMin').addEventListener('click',function(e){ e.stopPropagation(); $('arP').hidden=true; $('arOpen').hidden=false; });
+  $('arOpen').addEventListener('click',function(e){ e.stopPropagation(); $('arP').hidden=false; $('arOpen').hidden=true; });
   $('askF').addEventListener('submit',function(e){ e.preventDefault(); var v=$('askI').value; $('askI').value=''; $('askI').blur(); handle(v); });
   // ---- Spracheingabe (wenn der Browser sie anbietet) ----
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mics=document.querySelectorAll('[data-mic]');
   if(!SR){ mics.forEach(function(b){ b.hidden=true; }); }
   else{
-    var rec=null;
+    var rec=null, heard='';
     function micOn(on){ mics.forEach(function(b){ b.classList.toggle('live',on); }); }
-    mics.forEach(function(b){ b.addEventListener('click',function(e){ e.stopPropagation();
-      if(rec){ rec.stop(); return; }
+    function sorry(t){ say(t,true); setFace('eyes',{emo:'traurig'}); t3=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },3000); }
+    // Wie in Chat-Programmen: gedrückt halten und sprechen, loslassen schickt die Frage ab
+    function micStart(e){ e.preventDefault(); e.stopPropagation(); if(rec) return;
       if('speechSynthesis' in window) speechSynthesis.cancel();
-      rec=new SR(); rec.lang='de-DE'; rec.interimResults=false; rec.maxAlternatives=1;
-      rec.onresult=function(ev){ handle(ev.results[0][0].transcript); };
-      rec.onerror=function(ev){ say(ev.error==='not-allowed'?'Ich darf das Mikrofon nicht benutzen. Bitte im Browser erlauben.':'Ich habe Sie nicht verstanden. Bitte noch einmal.',true); setFace('eyes',{emo:'traurig'}); t3=setTimeout(function(){ setFace('eyes',{emo:'neutral'}); },3000); };
-      rec.onend=function(){ rec=null; micOn(false); if(face.emo==='hoer') setFace('eyes',{emo:'neutral'}); };
-      micOn(true); say('Ich höre zu …',true); setFace('eyes',{emo:'hoer'}); rec.start();
-    }); });
+      heard=''; rec=new SR(); rec.lang='de-DE'; rec.continuous=true; rec.interimResults=false; rec.maxAlternatives=1;
+      rec.onresult=function(ev){ for(var i=ev.resultIndex;i<ev.results.length;i++){ if(ev.results[i].isFinal) heard+=ev.results[i][0].transcript+' '; } };
+      rec.onerror=function(ev){ if(ev.error==='not-allowed'||ev.error==='service-not-allowed') sorry('Ich darf das Mikrofon nicht benutzen. Bitte im Browser erlauben.'); };
+      rec.onend=function(){ rec=null; micOn(false); if(face.emo==='hoer') setFace('eyes',{emo:'neutral'});
+        if(heard.trim()) handle(heard.trim()); else sorry('Ich habe nichts verstanden. Mikrofon gedrückt halten und dabei sprechen.'); };
+      micOn(true); say('Ich höre zu …',true); setFace('eyes',{emo:'hoer'});
+      try{ rec.start(); }catch(_){ rec=null; micOn(false); }
+    }
+    function micStop(e){ e.stopPropagation(); if(rec){ try{ rec.stop(); }catch(_){ } } }
+    mics.forEach(function(b){
+      b.addEventListener('pointerdown',micStart); b.addEventListener('pointerup',micStop); b.addEventListener('pointercancel',micStop); b.addEventListener('pointerleave',micStop);
+      b.addEventListener('click',function(e){ e.stopPropagation(); }); b.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+    });
   }
   say(IDLE,true);
   // ---- Größe in der Handy-Ansicht ----
@@ -296,17 +329,16 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
   // ---- Abstellen im Raum ----
   // Erst wird der Roboter an seinen Platz gezogen, ein Tipp auf den Bildschirm stellt ihn ab. Danach steht er fest:
   // Berührungen ändern nur noch die Größe (zwei Finger). Erst ein Tipp auf den Roboter selbst nimmt ihn wieder auf.
-  var inAR=false, K=1;
-  function hint(t){ $('arhint').textContent=t; }
+  var inAR=false, K=1, tUn=0;
+  var hT=null;
+  function hint(t,ms){ clearTimeout(hT); $('arhint').textContent=t; if(t) hT=setTimeout(function(){ $('arhint').textContent=''; },ms||6000); }
   function applyK(){ mv.setAttribute('scale',K+' '+K+' '+K); $('btO').classList.toggle('on',Math.abs(K-1)<.02); $('btT').classList.toggle('on',Math.abs(K-.2)<.02); }
   setScale=function(o){ K=o?1:0.2; applyK(); };
   function setLock(on){
     mv.classList.toggle('locked',on); $('btL').classList.toggle('on',on); $('btL').textContent=on?'✋ Umstellen':'📌 Abstellen';
-    if(inAR) hint(on?'Steht fest. Zwei Finger: Größe ändern. Tipp auf den Roboter: umstellen.':'Roboter an seinen Platz ziehen – dann einmal auf den Bildschirm tippen: Er steht.');
+    if(inAR) hint(on?'Steht fest.':'An seinen Platz ziehen, dann einmal tippen.',on?2000:5000);
   }
-  function setUi(on){ mv.classList.toggle('noui',!on); $('btU').classList.toggle('on',on); }
   $('btL').addEventListener('click',function(e){ e.stopPropagation(); setLock(!mv.classList.contains('locked')); });
-  $('btU').addEventListener('click',function(e){ e.stopPropagation(); setUi(mv.classList.contains('noui')); });
   // Tippen auf Knöpfe und auf die Sperrfläche darf den Roboter im Raum nicht versetzen
   document.querySelectorAll('.arui > *, #arlock').forEach(function(el){ el.addEventListener('beforexrselect',function(e){ e.preventDefault(); }); });
   // Sperrfläche: zwei Finger = Größe, kurzer Tipp auf den Roboter = wieder aufnehmen
@@ -319,16 +351,17 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:14px 0 30px;font
     if(Object.keys(pts).length>=2 && d0>0){ K=Math.max(0.1,Math.min(1.6,k0*dist()/d0)); applyK(); } });
   function up(e){ e.stopPropagation(); delete pts[e.pointerId]; d0=0;
     if(tap && e.type==='pointerup' && performance.now()-tap.t<400){ var hit=null; try{ hit=mv.positionAndNormalFromPoint(tap.x,tap.y); }catch(_){}
-      if(hit) setLock(false); }
+      if(hit){ tUn=performance.now(); setLock(false); } }
     tap=null; }
   lock.addEventListener('pointerup',up); lock.addEventListener('pointercancel',up); lock.addEventListener('click',function(e){ e.stopPropagation(); });
   // Solange er nicht abgestellt ist: ein kurzer Tipp irgendwo auf den Bildschirm stellt ihn ab
   var ft=null;
   mv.addEventListener('pointerdown',function(e){ ft=(inAR && !mv.classList.contains('locked') && !(e.target.closest && e.target.closest('.arui')))?{x:e.clientX,y:e.clientY,t:performance.now()}:null; },true);
-  mv.addEventListener('pointerup',function(e){ if(ft && performance.now()-ft.t<400 && Math.hypot(e.clientX-ft.x,e.clientY-ft.y)<12) setLock(true); ft=null; },true);
+  mv.addEventListener('pointerup',function(e){ if(ft && performance.now()-tUn>600 && performance.now()-ft.t<400 && Math.hypot(e.clientX-ft.x,e.clientY-ft.y)<12) setLock(true); ft=null; },true);
+  mv.addEventListener('click',function(e){ if(inAR && performance.now()-tUn>600 && !mv.classList.contains('locked') && !(e.target.closest && e.target.closest('.arui'))) setLock(true); });
   mv.addEventListener('ar-status',function(e){ var st=e.detail.status;
-    if(st==='not-presenting'||st==='failed'){ inAR=false; setScale(true); setLock(false); setUi(true); hint(''); }
-    else if(!inAR){ inAR=true; setLock(false); hint('Handy langsam über den Boden oder Tisch bewegen, bis der Roboter erscheint. Dann an seinen Platz ziehen und einmal auf den Bildschirm tippen: Er steht.'); }
+    if(st==='not-presenting'||st==='failed'){ inAR=false; setScale(true); setLock(false); panel('cmd'); $('arP').hidden=false; $('arOpen').hidden=true; hint(''); }
+    else if(!inAR){ inAR=true; setLock(false); hint('Handy langsam über Boden oder Tisch bewegen. Roboter an seinen Platz ziehen, dann einmal tippen: Er steht.',9000); }
   });
   // ---- Als App installieren ----
   var deferred=null, inst=$('inst');
